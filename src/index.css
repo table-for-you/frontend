@@ -1,0 +1,22 @@
+@font-face {
+    font-family: 'NotoSansKR';
+    src: url('/src/assets/NotoSansKR-Medium.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    --tomato-color: #FF4752;
+    --tomato-color-hover: #E03D47;
+    --tomato-color-active: #C53641;
+}
+
+
+html,
+body {
+    font-family: 'NotoSansKR';
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities
