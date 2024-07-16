@@ -7,8 +7,8 @@
 
 :root {
     --tomato-color: #FF4752;
-    --tomato-color-hover: #E03D47;
-    --tomato-color-active: #C53641;
+    --tomato-color-hover: #fb3339; /* 덜 어두운 색상 */
+    --tomato-color-active: #f91a22; /* 덜 어두운 색상 */
 }
 
 
