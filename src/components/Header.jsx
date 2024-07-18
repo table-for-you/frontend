@@ -22,7 +22,7 @@ export default function Header() {
             <div>
                 {windowWidth > 768 ?
                     <Button btnName={"로그인"}></Button> :
-                    <Button className={btn + " material-symbols-outlined"} btnName={"menu"}></Button>
+                    <Button style="material-symbols-outlined" btnName={"menu"}></Button>
                 }
             </div>
         </header>
