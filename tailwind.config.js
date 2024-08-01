@@ -7,11 +7,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        'tomato-color': 'var(--tomato-color)',
-        'tomato-color-hover': 'var(--tomato-color-hover)',
-        'tomato-color-active': 'var(--tomato-color-active)',
-      }
+        "tomato-color": "var(--tomato-color)",
+        "tomato-color-hover": "var(--tomato-color-hover)",
+        "tomato-color-active": "var(--tomato-color-active)",
+      },
     },
   },
   plugins: [],
-}
+};

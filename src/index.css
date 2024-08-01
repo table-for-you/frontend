@@ -1,22 +1,21 @@
 @font-face {
-    font-family: 'NotoSansKR';
-    src: url('/src/assets/NotoSansKR-Medium.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+  font-family: "NotoSansKR";
+  src: url("/src/assets/NotoSansKR-Medium.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
 }
 
 :root {
-    --tomato-color: #FF4752;
-    --tomato-color-hover: #fb3339; /* 덜 어두운 색상 */
-    --tomato-color-active: #f91a22; /* 덜 어두운 색상 */
+  --tomato-color: #ff4752;
+  --tomato-color-hover: #fb3339; /* 덜 어두운 색상 */
+  --tomato-color-active: #f91a22; /* 덜 어두운 색상 */
 }
-
 
 html,
 body {
-    font-family: 'NotoSansKR';
+  font-family: "NotoSansKR";
 }
 
 @tailwind base;
 @tailwind components;
-@tailwind utilities
+@tailwind utilities;

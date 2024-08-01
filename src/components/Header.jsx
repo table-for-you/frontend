@@ -1,30 +1,37 @@
-import { useState, useEffect } from "react"
-import { btn } from "../constants/style"
-import Button from "./Button"
+import { useState, useEffect } from "react";
+import Button from "./Button";
 import { debounce } from "lodash";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const handleResize = debounce(() => {
-            setWindowWidth(window.innerWidth);
-        }, 200);
-        addEventListener('resize', handleResize);
-        return () => removeEventListener('resize', handleResize);
-    });
+  useEffect(() => {
+    const handleResize = debounce(() => {
+      setWindowWidth(window.innerWidth);
+    }, 200);
+    addEventListener("resize", handleResize);
+    return () => removeEventListener("resize", handleResize);
+  });
 
-    return (
-        <header className="flex justify-around items-center h-20 border-b">
-            <div>
-                <span className="text-2xl text-tomato-color font-bold cursor-pointer">Table For You</span>
-            </div>
-            <div>
-                {windowWidth > 768 ?
-                    <Button btnName={"로그인"}></Button> :
-                    <Button style="material-symbols-outlined" btnName={"menu"}></Button>
-                }
-            </div>
-        </header>
-    )
+  return (
+    <header className="flex h-20 items-center justify-around border-b">
+      <div>
+        <span
+          className="cursor-pointer text-2xl font-bold text-tomato-color"
+          onClick={() => navigate("/")}
+        >
+          Table For You
+        </span>
+      </div>
+      <div>
+        {windowWidth > 768 ? (
+          <Button onClick={() => navigate("/login")}>로그인</Button>
+        ) : (
+          <Button style="material-symbols-outlined">menu</Button>
+        )}
+      </div>
+    </header>
+  );
 }
