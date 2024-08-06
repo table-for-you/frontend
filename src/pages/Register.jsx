@@ -3,7 +3,7 @@ import { tomatoBtn, redLine, greenLine, inputStyle } from "../constants/style";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
-
+import { api } from "../services/api";
 
 export default function Register() {
   const {
@@ -12,10 +12,70 @@ export default function Register() {
     watch,
     formState: { isSubmitting, isSubmitted, errors },
     trigger,
-  } = useForm();
+  } = useForm({ mode: "onChange" });
+
   const [showPassword, setShowPassword] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
+
+  const [valNickname, setValNickname] = useState(null);
+  const [valId, setValId] = useState(null);
+  const [sendMail, setSendMail] = useState({
+    send: false,
+    message: ''
+  });
+  const [checkMail, setCheckMail] = useState(false);
   const navigate = useNavigate();
+
+  const checkNickname = async () => {
+    try {
+      const nickname = watch("nickname"); // 현재 입력된 닉네임 가져오기
+      const res = await api.get("/public/users/check-nickname", {
+        params: { nickname: nickname },
+      });
+
+      if (!res.data.response) {
+        setValNickname(false);
+      } else {
+        setValNickname(true);
+      }
+    } catch (err) {
+      setValNickname(true);
+    }
+  };
+
+  const checkId = async () => {
+    try {
+      const id = watch("id");
+      const res = await api.get('/public/users/check-username', {
+        params: { username: id }
+      });
+
+      if (!res.data.response) {
+        setValId(false);
+      } else {
+        setValId(true);
+      }
+    } catch (err) {
+      setValId(true);
+    }
+  }
+
+  const checkSendMail = async () => {
+    try {
+      const email = watch('email');
+      const res = await api.post(`/public/emails/verification-request?email=${encodeURIComponent(email)}`);
+      setSendMail((prevSendMail) => {
+        return { ...prevSendMail, send: true }
+      })
+    } catch (err) {
+      setSendMail((prevSendMail) => {
+        return { ...prevSendMail, message: err.response.data.message }
+      })
+      console.error(err)
+    }
+  }
+
+
 
   // 개인정보 활용 동의 추가 필요
   useEffect(() => {
@@ -39,7 +99,7 @@ export default function Register() {
             <input
               type="text"
               id="nickname"
-              className={`${isSubmitted ? (errors.nickname ? redLine : greenLine) : undefined} ${inputStyle} flex-grow`}
+              className={`${watch("nickname") ? (errors.nickname || valNickname === true || valNickname === null ? redLine : greenLine) : undefined} ${inputStyle} flex-grow`}
               maxLength="10"
               placeholder="특수문자를 제외한 2~10자"
               {...register("nickname", {
@@ -48,14 +108,31 @@ export default function Register() {
                   value: /^[ㄱ-ㅎ가-힣a-zA-Z0-9-_]{2,10}$/,
                   message: "특수문자를 제외한 2~10자리여야 합니다.",
                 },
+                onChange: () => setValNickname(null)
               })}
             />
-            <Button style="text-sm absolute top-1 right-1 bg-white">
+            <Button
+              style="text-sm absolute top-1 right-1 bg-white disabled:opacity-40"
+              onClick={checkNickname}
+              disabled={!watch("nickname") || errors.nickname}
+              type="button"
+            >
               중복 확인
             </Button>
           </div>
           {errors.nickname && (
             <small className="text-red-500">{errors.nickname.message}</small>
+          )}
+
+          {!errors.nickname && valNickname === null && watch("nickname") && (
+            <small className="text-red-500">중복 확인을 해주세요.</small>
+          )}
+
+          {!errors.nickname && valNickname === false && (
+            <small className="text-green-500">사용 가능한 닉네임입니다.</small>
+          )}
+          {!errors.nickname && valNickname === true && (
+            <small className="text-red-500">중복된 닉네임입니다.</small>
           )}
 
           <label htmlFor="id" className="cursor-pointer text-sm">
@@ -65,7 +142,7 @@ export default function Register() {
             <input
               type="text"
               id="id"
-              className={`${isSubmitted ? (errors.id ? redLine : greenLine) : undefined} ${inputStyle} flex-grow`}
+              className={`${watch('id') ? (errors.id || valId === true || valId === null ? redLine : greenLine) : undefined} ${inputStyle} flex-grow`}
               maxLength="20"
               placeholder="특수문자를 제외한 4~20자"
               {...register("id", {
@@ -74,14 +151,30 @@ export default function Register() {
                   value: /^[ㄱ-ㅎ가-힣a-zA-Z0-9-_]{4,20}$/,
                   message: "특수문자를 제외한 4~20자리여야 합니다.",
                 },
+                onChange: () => setValId(null)
               })}
             />
-            <Button style="text-sm absolute top-1 right-1 bg-white">
+            <Button style="text-sm absolute top-1 right-1 bg-white disabled:opacity-40"
+              onClick={checkId}
+              disabled={!watch("id") || errors.id}
+              type="button"
+            >
               중복 확인
             </Button>
           </div>
           {errors.id && (
             <small className="text-red-500">{errors.id.message}</small>
+          )}
+
+          {!errors.id && valId === null && watch("id") && (
+            <small className="text-red-500">중복 확인을 해주세요.</small>
+          )}
+
+          {!errors.id && valId === false && (
+            <small className="text-green-500">사용 가능한 아이디입니다.</small>
+          )}
+          {!errors.id && valId === true && (
+            <small className="text-red-500">중복된 아이디입니다.</small>
           )}
 
           <label htmlFor="password" className="cursor-pointer text-sm">
@@ -91,7 +184,7 @@ export default function Register() {
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              className={`${isSubmitted ? (errors.password ? redLine : greenLine) : undefined} ${inputStyle} flex-grow`}
+              className={`${watch('password') ? (errors.password ? redLine : greenLine) : undefined} ${inputStyle} flex-grow`}
               maxLength="16"
               placeholder="숫자, 특수문자 포함 8~16자"
               {...register("password", {
@@ -122,7 +215,7 @@ export default function Register() {
           <input
             type={showPassword ? "text" : "password"}
             id="password"
-            className={`${isSubmitted ? (errors.passwordConfirm ? redLine : greenLine) : undefined} ${inputStyle}`}
+            className={`${watch("passwordConfirm") ? (errors.passwordConfirm ? redLine : greenLine) : undefined} ${inputStyle}`}
             maxLength="16"
             placeholder="********"
             {...register("passwordConfirm", {
@@ -144,7 +237,7 @@ export default function Register() {
             <input
               type="email"
               id="email"
-              className={`${isSubmitted ? (errors.email ? redLine : greenLine) : undefined} ${inputStyle} flex-grow truncate pr-24`}
+              className={`${watch('email') ? (errors.email || !(sendMail.send) ? redLine : greenLine) : undefined} ${inputStyle} flex-grow truncate pr-24`}
               placeholder="tableforyou@table.com"
               {...register("email", {
                 required: "이메일은 필수 입력입니다.",
@@ -152,14 +245,34 @@ export default function Register() {
                   value: /\S+@\S+\.\S+/,
                   message: "이메일 형식에 맞지 않습니다.",
                 },
+                onChange: () => setSendMail((prevSendMail) => {
+                  return { ...prevSendMail, send: false }
+                })
               })}
             />
-            <Button style="text-sm absolute top-1 right-1 bg-white">
+            <Button style="text-sm absolute top-1 right-1 bg-white disabled:opacity-40"
+              disabled={!watch("email") || errors.email}
+              onClick={checkSendMail}
+              type="button"
+            >
               번호 전송
             </Button>
           </div>
           {errors.email && (
             <small className="text-red-500">{errors.email.message}</small>
+          )}
+          
+         {/* {이메일 인증번호를 여러 번 보냈을 때 메시지가 변경 되어야 함} */}
+          {!errors.email && sendMail.send === false && watch("email") && (
+            <small className="text-red-500">이메일 인증을 진행해주세요.</small>
+          )}
+
+          {!errors.email && sendMail.send === false && sendMail.message !== '' && (
+            <small className="text-red-500">{sendMail.message}</small>
+          )}
+
+          {!errors.email && sendMail.send === true && (
+            <small className="text-green-500">인증 번호를 전송하였습니다.</small>
           )}
 
           <label htmlFor="email-validity" className="cursor-pointer text-sm">
