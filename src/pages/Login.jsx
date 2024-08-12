@@ -7,22 +7,19 @@ import { useNavigate } from "react-router-dom";
 export default function Login() {
   const {
     register,
-    handleSubmit,
     formState: { isSubmitting, isSubmitted, errors },
-  } = useForm();
+  } = useForm({ mode: "onChange" });
   const [showPassword, setShowPassword] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
   const navigate = useNavigate();
+
 
   return (
     <>
       <div className="grid h-[calc(100vh-20rem)] place-items-center">
         <form
           className="relative flex w-full flex-col gap-2 px-4 sm:w-1/2 lg:w-1/3 xl:w-1/4"
-          onSubmit={handleSubmit(async (data) => {
-            await new Promise((r) => setTimeout(r, 1_000));
-            alert(JSON.stringify(data));
-          })}
+          onSubmit={e => e.preventDefault()}
         >
           <label className="cursor-pointer text-sm" htmlFor="id">
             아이디
@@ -80,8 +77,9 @@ export default function Login() {
           </div>
           <p className="m-auto text-sm text-zinc-500">계정이 없으신가요?</p>
           <span
-            className="m-auto cursor-pointer"
+            className="m-auto cursor-pointer disabled:opacity-40"
             onClick={() => navigate("/register")}
+            disabled
           >
             회원가입
           </span>

@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { tomatoBtn, redLine, greenLine, inputStyle } from "../constants/style";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import { api } from "../services/api";
@@ -8,7 +8,6 @@ import { api } from "../services/api";
 export default function Register() {
   const {
     register,
-    handleSubmit,
     watch,
     formState: { isSubmitting, isSubmitted, errors },
     trigger,
@@ -23,7 +22,17 @@ export default function Register() {
     send: false,
     message: ''
   });
-  const [checkMail, setCheckMail] = useState(false);
+  const [count, setCount] = useState(60);
+  const intervalRef = useRef(null);
+
+  const [checkMail, setCheckMail] = useState({
+    check: false,
+    message: ''
+  });
+  const [checkCount, setCheckCount] = useState(180);
+  const checkIntervalRef = useRef(null);
+
+
   const navigate = useNavigate();
 
   const checkNickname = async () => {
@@ -71,9 +80,103 @@ export default function Register() {
       setSendMail((prevSendMail) => {
         return { ...prevSendMail, message: err.response.data.message }
       })
-      console.error(err)
     }
   }
+
+  const sendMailCount = () => {
+    if (intervalRef.current) return;
+
+    intervalRef.current = setInterval(() => {
+      setCount(prevCount => {
+        if (prevCount === 0) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+          return 60;
+        }
+        return prevCount - 1;
+      });
+    }, 1000);
+  };
+
+  const checkNumMail = async () => {
+    try {
+      const email = watch('email');
+      const emailCode = watch('emailCode');
+      const res = await api.post(`/public/code-verification?email=${encodeURIComponent(email)}&code=${emailCode}`);
+
+      if (res.data === true) {
+        setCheckMail((prevCheckMail) => {
+          return { ...prevCheckMail, check: true }
+        })
+      }
+
+    } catch (err) {
+      setCheckMail((prevCheckMail) => {
+        return { ...prevCheckMail, message: err.response.data.message }
+      })
+    }
+  }
+
+  const singUp = async () => {
+    const data = {
+      'nickname': watch('nickname'),
+      'username': watch('id'),
+      'password': watch('password'),
+      'email': watch('email'),
+      'age': watch('age'),
+      'role': watch('role')
+    };
+    const config = { headers: { "Content-Type": 'application/json' } };
+    try {
+      const res = await api.post('/public/users/register', data, config);
+
+      if (res.status >= 200 && res.status < 300) {
+        alert(JSON.stringify(res.data.response));
+        navigate('/login');
+      }
+
+    } catch (err) {
+      alert(JSON.stringify(err.response.data.message))
+    }
+
+  }
+  const checkMailCount = () => {
+    if (checkIntervalRef.current) return;
+
+    checkIntervalRef.current = setInterval(() => {
+      setCheckCount(prevCount => {
+        if (prevCount === 0) {
+          clearInterval(checkIntervalRef.current);
+          checkIntervalRef.current = null;
+
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+          setCount(60);
+
+
+          setSendMail((prevSendMail) => {
+            return { ...prevSendMail, send: false }
+          });
+
+          setCheckMail((prevCheckMail) => {
+            return { ...prevCheckMail, send: false }
+          });
+
+          return 180;
+        }
+        return prevCount - 1;
+      });
+    }, 1000);
+  };
+
+  const formatTime = (count) => {
+    const minutes = String(Math.floor(count / 60)).padStart(2, '0');
+    const seconds = String(Math.floor(count % 60)).padStart(2, '0');
+
+    return `${minutes}:${seconds}`;
+  }
+
+
 
 
 
@@ -90,7 +193,7 @@ export default function Register() {
         <form
           className="relative flex w-full flex-col gap-2 px-4 sm:w-1/2 lg:w-1/3 xl:w-1/4"
           noValidate
-          onSubmit={handleSubmit((data) => alert(data))}
+          onSubmit={e => e.preventDefault()}
         >
           <label htmlFor="nickname" className="cursor-pointer text-sm">
             닉네임
@@ -250,19 +353,35 @@ export default function Register() {
                 })
               })}
             />
-            <Button style="text-sm absolute top-1 right-1 bg-white disabled:opacity-40"
-              disabled={!watch("email") || errors.email}
-              onClick={checkSendMail}
-              type="button"
-            >
-              번호 전송
-            </Button>
+
+
+            {
+              intervalRef.current === null ?
+                <Button style="text-sm absolute top-1 right-1 bg-white disabled:opacity-40"
+                  disabled={!watch("email") || errors.email}
+                  onClick={() => {
+                    checkSendMail();
+                    sendMailCount();
+                    checkMailCount();
+                  }}
+                  type="button"
+                >
+                  번호 전송
+                </Button> :
+
+                <Button style="text-sm absolute top-1 right-1 bg-white disabled:opacity-40"
+                  disabled
+                  type="button"
+                >
+                  {formatTime(count)}
+                </Button>
+            }
+
           </div>
           {errors.email && (
             <small className="text-red-500">{errors.email.message}</small>
           )}
-          
-         {/* {이메일 인증번호를 여러 번 보냈을 때 메시지가 변경 되어야 함} */}
+
           {!errors.email && sendMail.send === false && watch("email") && (
             <small className="text-red-500">이메일 인증을 진행해주세요.</small>
           )}
@@ -275,27 +394,51 @@ export default function Register() {
             <small className="text-green-500">인증 번호를 전송하였습니다.</small>
           )}
 
-          <label htmlFor="email-validity" className="cursor-pointer text-sm">
+          <label htmlFor="email-code" className="cursor-pointer text-sm">
             이메일 인증번호
           </label>
           <div className="relative flex">
             <input
-              type="text"
-              id="email-validity"
-              className={`${isSubmitted ? (errors.emailValidity ? redLine : greenLine) : undefined} ${inputStyle} flex-grow`}
+              type="number"
+              id="email-code"
+              className={`${watch("emailCode") ? ((errors.emailCode || !checkMail.check) ? redLine : greenLine) : undefined} ${inputStyle} flex-grow`}
               placeholder="123456"
-              {...register("emailValidity", {
+              {...register("emailCode", {
                 required: "인증번호 확인은 필수 입력입니다.",
               })}
             />
-            <Button style="text-sm absolute top-1 right-1 bg-white">
-              번호 확인
-            </Button>
+            {
+              !sendMail.send ?
+                <Button
+                  style="text-sm absolute top-1 right-1 bg-white"
+                  type="button"
+                >
+                  번호 확인
+                </Button> :
+
+                <Button
+                  style="text-sm absolute top-1 right-1 bg-white"
+                  type="button"
+                  onClick={checkNumMail}
+                >
+                  확인  : {formatTime(checkCount)}
+                </Button>
+            }
           </div>
-          {errors.emailValidity && (
+          {errors.emailCode && (
             <small className="text-red-500">
-              {errors.emailValidity.message}
+              {errors.emailCode.message}
             </small>
+          )}
+
+          {
+            !errors.emailCode && checkMail.check && (
+              <small className="text-green-500">인증 확인 되었습니다.</small>
+            )
+          }
+
+          {!errors.emailCode && !checkMail.check && (
+            < small className="text-red-500">{checkMail.message}</small>
           )}
 
           <label htmlFor="age" className="cursor-pointer text-sm">
@@ -320,20 +463,35 @@ export default function Register() {
             name="role"
             id="role"
             className={`cursor-pointe text-sm ${inputStyle}`}
+            {...register('role')}
           >
-            <option value="customer">손님</option>
-            <option value="store-manager">점장님</option>
+            <option value="USER">손님</option>
+            <option value="OWNER">점장님</option>
           </select>
 
           <Button
-            className={`${tomatoBtn} disabled:opacity-75`}
-            onClick={() => navigate("/register")}
-            disabled={isSubmitting}
+            className={`${tomatoBtn} disabled:opacity-50`}
+            disabled={
+              isSubmitting ||
+              valNickname ||
+              valId ||
+              !sendMail.send ||
+              !checkMail.check ||
+              errors.nickname ||
+              errors.id ||
+              errors.password ||
+              errors.passwordConfirm ||
+              errors.email ||
+              errors.emailCode ||
+              errors.age ||
+              watch('age') === ''
+            }
+            onClick={singUp}
           >
             회원가입
           </Button>
         </form>
-      </div>
+      </div >
     </>
   );
 }
