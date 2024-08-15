@@ -177,9 +177,6 @@ export default function Register() {
   }
 
 
-
-
-
   // 개인정보 활용 동의 추가 필요
   useEffect(() => {
     if (isSubmitted) {
@@ -470,7 +467,7 @@ export default function Register() {
           </select>
 
           <Button
-            className={`${tomatoBtn} disabled:opacity-50`}
+            className={`${tomatoBtn} cursor-pointer disabled:opacity-50`}
             disabled={
               isSubmitting ||
               valNickname ||

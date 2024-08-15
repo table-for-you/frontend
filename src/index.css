@@ -7,13 +7,15 @@
 
 :root {
   --tomato-color: #ff4752;
-  --tomato-color-hover: #fb3339; /* 덜 어두운 색상 */
-  --tomato-color-active: #f91a22; /* 덜 어두운 색상 */
+  --tomato-color-hover: #fb3339; 
+  --tomato-color-active: #f91a22; 
 }
 
 html,
 body {
   font-family: "NotoSansKR";
+  /* padding: 0 20px; */
+
 }
 
 @tailwind base;

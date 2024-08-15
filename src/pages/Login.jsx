@@ -1,18 +1,48 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { useDispatch } from 'react-redux';
 import Button from "../components/Button";
-import { tomatoBtn, redLine, greenLine, inputStyle } from "../constants/style";
-import { useNavigate } from "react-router-dom";
+import { tomatoBtn, inputStyle } from "../constants/style";
+import { Link, useNavigate } from "react-router-dom";
+import { api } from "../services/api";
+import { SET_TOKEN } from "../store/auth";
 
 export default function Login() {
   const {
     register,
+    watch,
+    getValues,
     formState: { isSubmitting, isSubmitted, errors },
   } = useForm({ mode: "onChange" });
   const [showPassword, setShowPassword] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
-  const navigate = useNavigate();
+  const [loginErrorMessage, setLoginErrorMessage] = useState(null);
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const login = async () => {
+    const data = {
+      'username': watch('id'),
+      'password': watch('password')
+    };
+    const config = {
+      headers: { "Content-Type": 'application/json' },
+      withCredentials: true
+    };
+    // 쿠키 추후 (why? https 설정 문제로 인해)
+    try {
+      const res = await api.post('/api/login', data, config);
+
+      if (res.status >= 200 && res.status < 300) {
+        const { accessToken, nickname } = res.data;
+        dispatch(SET_TOKEN({ token: accessToken, nickname }));
+        navigate('/');
+      }
+    } catch (err) {
+      setLoginErrorMessage(err.response.data.message);
+    }
+  }
 
   return (
     <>
@@ -25,7 +55,7 @@ export default function Login() {
             아이디
           </label>
           <input
-            className={`${isSubmitted ? (errors.id ? redLine : greenLine) : undefined} ${inputStyle}`}
+            className={`${inputStyle} flex-grow`}
             id="id"
             type="text"
             placeholder="TableForYou"
@@ -43,7 +73,7 @@ export default function Login() {
           </label>
           <div className="relative flex">
             <input
-              className={`${isSubmitted ? (errors.password ? redLine : greenLine) : undefined} ${inputStyle} flex-grow`}
+              className={`${inputStyle} flex-grow`}
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="********"
@@ -51,7 +81,6 @@ export default function Login() {
                 required: "비밀번호는 필수 입력입니다.",
                 onChange: (e) => setPasswordInput(e.target.value),
               })}
-              maxLength="16"
             />
             {passwordInput.length > 0 && (
               <span
@@ -67,19 +96,31 @@ export default function Login() {
             <small className="text-red-500">{errors.password.message}</small>
           )}
           <Button
-            className={`${tomatoBtn} disabled:opacity-75`}
-            disabled={isSubmitting}
+            className={`${tomatoBtn} cursor-pointer disabled:opacity-75`}
+            disabled={
+              errors.id ||
+              errors.password ||
+              !getValues('id') ||  // 헤더의 로그인 버튼으로 인해 disabeld 풀리는 것 방지
+              !getValues('password')
+            }
+            onClick={login}
           >
             로그인
           </Button>
+          {
+            loginErrorMessage &&
+            <small className="text-red-500">{loginErrorMessage}</small>
+          }
+
           <div className="flex justify-end">
-            <small>비밀번호 재설정</small>
+            <small className="cursor-pointer border-b border-transparent hover:border-black">
+              <Link to="/reset-password">비밀번호 재설정</Link>
+            </small>
           </div>
           <p className="m-auto text-sm text-zinc-500">계정이 없으신가요?</p>
           <span
-            className="m-auto cursor-pointer disabled:opacity-40"
+            className="m-auto cursor-pointer border-b border-transparent hover:border-black"
             onClick={() => navigate("/register")}
-            disabled
           >
             회원가입
           </span>
