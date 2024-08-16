@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import Button from "../components/Button";
 import { tomatoBtn, inputStyle } from "../constants/style";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,33 +23,33 @@ export default function Login() {
 
   const login = async () => {
     const data = {
-      'username': watch('id'),
-      'password': watch('password')
+      username: watch("id"),
+      password: watch("password"),
     };
     const config = {
-      headers: { "Content-Type": 'application/json' },
-      withCredentials: true
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
     };
     // 쿠키 추후 (why? https 설정 문제로 인해)
     try {
-      const res = await api.post('/api/login', data, config);
+      const res = await api.post("/api/login", data, config);
 
       if (res.status >= 200 && res.status < 300) {
         const { accessToken, nickname } = res.data;
         dispatch(SET_TOKEN({ token: accessToken, nickname }));
-        navigate('/');
+        navigate("/");
       }
     } catch (err) {
       setLoginErrorMessage(err.response.data.message);
     }
-  }
+  };
 
   return (
     <>
       <div className="grid h-[calc(100vh-20rem)] place-items-center">
         <form
           className="relative flex w-full flex-col gap-2 px-4 sm:w-1/2 lg:w-1/3 xl:w-1/4"
-          onSubmit={e => e.preventDefault()}
+          onSubmit={(e) => e.preventDefault()}
         >
           <label className="cursor-pointer text-sm" htmlFor="id">
             아이디
@@ -100,17 +100,16 @@ export default function Login() {
             disabled={
               errors.id ||
               errors.password ||
-              !getValues('id') ||  // 헤더의 로그인 버튼으로 인해 disabeld 풀리는 것 방지
-              !getValues('password')
+              !getValues("id") || // 헤더의 로그인 버튼으로 인해 disabeld 풀리는 것 방지
+              !getValues("password")
             }
             onClick={login}
           >
             로그인
           </Button>
-          {
-            loginErrorMessage &&
+          {loginErrorMessage && (
             <small className="text-red-500">{loginErrorMessage}</small>
-          }
+          )}
 
           <div className="flex justify-end">
             <small className="cursor-pointer border-b border-transparent hover:border-black">

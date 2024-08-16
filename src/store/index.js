@@ -1,8 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import tokenReducer from './auth';
+import tokenReducer from "./auth";
+import inViewReducer from "./inView";
 
 export default configureStore({
-    reducer: {
-        authToken: tokenReducer
-    }
-})
+  reducer: {
+    authToken: tokenReducer,
+    inView: inViewReducer,
+  },
+});

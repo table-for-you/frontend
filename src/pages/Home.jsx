@@ -1,11 +1,11 @@
 import Button from "../components/Button";
+import Title from "../components/Title";
 
-export default function Home() {  
-  
+export default function Home() {
   return (
     <>
       <div>
-        <p>홈입니다.</p>
+        <Title />
       </div>
     </>
   );
