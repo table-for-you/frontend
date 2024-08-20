@@ -14,14 +14,52 @@
 html,
 body {
   font-family: "NotoSansKR";
-  /* padding: 0 20px; */
-  -ms-overflow-style: none; 
+  -ms-overflow-style: none;
 }
 
 ::-webkit-scrollbar {
   display: none;
 }
 
+.fc .fc-toolbar-title {
+  font-size: 1.2rem;
+}
+
+.fc .fc-button {
+  font-size: 1rem;
+}
+
+.fc .fc-toolbar.fc-header-toolbar {
+  margin-top: 1em;
+  margin-bottom: 1.5em;
+}
+
+.saturday-cell .fc-daygrid-day-number {
+  color: blue;
+}
+
+.sunday-cell .fc-daygrid-day-number {
+  color: red;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes ripple {
+  0% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@layer utilities {
+  .animate-ripple {
+    animation: ripple 2s ease-out infinite;
+  }
+}

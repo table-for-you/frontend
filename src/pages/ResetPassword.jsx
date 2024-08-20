@@ -16,6 +16,18 @@ export default function ResetPassword() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const contentMotion = {
+    initial: { opacity: 0, y: -200 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -200 },
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 25,
+      duration: 0.5,
+    },
+  };
+
   const navigate = useNavigate();
 
   const findPass = async () => {
@@ -112,7 +124,14 @@ export default function ResetPassword() {
           )}
         </form>
       </div>
-      <Modal modalOpen={isModalOpen} setModalOpen={setIsModalOpen}>
+      <Modal
+        modalOpen={isModalOpen}
+        setModalOpen={setIsModalOpen}
+        className={
+          "relative flex flex-col rounded-lg bg-white p-5 shadow-lg sm:h-1/4"
+        }
+        contentMotion={contentMotion}
+      >
         <div className="mb-2 flex flex-grow flex-col items-center justify-center">
           <p className="pb-6 sm:text-lg">임시 비밀번호가 전송되었어요!</p>
           <p>로그인 후 회원정보에서</p>
