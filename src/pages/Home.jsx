@@ -9,7 +9,6 @@ export default function Home() {
       <div>
         <Title />
         <div className="px-5 pt-5 md:px-14 lg:px-28 xl:px-44 2xl:px-72">
-          {/* 가로 스크롤 생김 수정 필요 */}
           <BlackPick />
         </div>
       </div>
