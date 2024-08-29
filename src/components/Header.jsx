@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import Button from "./Button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { btn } from "../constants/style";
+import { btn, tomatoBtn } from "../constants/style";
 import { api } from "../services/api";
-import MobileMenuBar from "./MobileMenuBar";
+import Modal from "./Modal";
+import { useShowMobile } from "../hooks/useShowMobile";
 
 export default function Header({ test }) {
-  const [showMobile, setShowMobile] = useState(null);
   const [menuBar, setMenuBar] = useState(false);
   const navigate = useNavigate();
   const { authenticated, nickname, accessToken } = useSelector(
@@ -19,32 +19,19 @@ export default function Header({ test }) {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
 
-  useEffect(() => {
-    const handleSize = () => {
-      if (window.matchMedia("(max-width: 768px)").matches) {
-        setShowMobile(true);
-      } else if (window.matchMedia("(min-width: 769px)").matches) {
-        setShowMobile(false);
-      }
-    };
+  const { showMobile, isModalOpen, setIsModalOpen } = useShowMobile();
 
-    handleSize();
-
-    const mediaQueryLists = [
-      window.matchMedia("(max-width: 768px)"),
-      window.matchMedia("(min-width: 1024px)"),
-    ];
-
-    mediaQueryLists.forEach((mql) => {
-      mql.addEventListener("change", handleSize);
-    });
-
-    return () => {
-      mediaQueryLists.forEach((mql) => {
-        mql.removeEventListener("change", handleSize);
-      });
-    };
-  }, []);
+  const contentMotion = {
+    initial: { opacity: 0, x: 200 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: 200 },
+    transition: {
+      type: "spring",
+      stiffness: 2000,
+      damping: 250,
+      duration: 0.5,
+    },
+  };
 
   // const logout = () => {
   //   try {
@@ -111,12 +98,54 @@ export default function Header({ test }) {
             </Button>
           )
         ) : (
-          <Button
-            style={`material-symbols-outlined ${isHomePage && inView && "bg-white"}`}
-            onClick={() => console.log("test")} //클릭시 모바일 메뉴 오른쪽에서 왼쪽으로 슬라이드 하며 나오게 해야 함.
-          >
-            menu
-          </Button>
+          <>
+            <Button
+              style={`material-symbols-outlined ${isHomePage && inView && "bg-white"}`}
+              onClick={() => setIsModalOpen(!isModalOpen)} //클릭시 모바일 메뉴 오른쪽에서 왼쪽으로 슬라이드 하며 나오게 해야 함.
+            >
+              menu
+            </Button>
+            {isModalOpen && (
+              <Modal
+                modalOpen={isModalOpen}
+                setModalOpen={setIsModalOpen}
+                parentClass={
+                  "fixed inset-0 z-50 flex items-center justify-end bg-black bg-opacity-50"
+                }
+                childClass={
+                  "z-50 h-full w-full bg-neutral-100 sm:w-[60%] md:w-[50%]"
+                }
+                contentMotion={contentMotion}
+              >
+                {authenticated ? (
+                  <div className="mt-10 flex flex-col gap-3 p-2">
+                    <div className="w-full p-4 text-center shadow-lg">
+                      <p>{nickname}님 반가워요👋</p>
+                    </div>
+                    <Button
+                      onClick={() => {
+                        setIsModalOpen(false);
+                      }}
+                      style={`${tomatoBtn} w-full`}
+                    >
+                      로그아웃
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="mt-10 flex p-2">
+                    <Button
+                      onClick={() => {
+                        setIsModalOpen(false), navigate("/login");
+                      }}
+                      style={`${tomatoBtn} w-full`}
+                    >
+                      로그인
+                    </Button>
+                  </div>
+                )}
+              </Modal>
+            )}
+          </> //
         )}
       </div>
     </header>

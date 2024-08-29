@@ -5,7 +5,8 @@ export default function Modal({
   modalOpen,
   setModalOpen,
   children,
-  className,
+  parentClass,
+  childClass,
   contentMotion,
 }) {
   const modalBackGround = useRef();
@@ -15,7 +16,7 @@ export default function Modal({
       {modalOpen && (
         <motion.div
           ref={modalBackGround}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          className={parentClass}
           onClick={(e) => {
             if (e.target === modalBackGround.current) {
               setModalOpen(false);
@@ -27,7 +28,7 @@ export default function Modal({
           transition={{ duration: 0.3 }}
         >
           <motion.div
-            className={className}
+            className={childClass}
             initial={contentMotion.initial}
             animate={contentMotion.animate}
             exit={contentMotion.exit}
