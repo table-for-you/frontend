@@ -62,7 +62,7 @@ export default function Test() {
         ref={ref}
       ></video>
 
-      <div className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 transform text-lg text-white xl:text-xl w-full flex justify-center">
+      <div className="absolute left-1/2 top-1/3 flex w-full -translate-x-1/2 -translate-y-1/2 transform justify-center text-lg text-white xl:text-xl">
         {showMobile ? (
           <div className="relative">
             <span className="material-symbols-outlined absolute top-1/2 -translate-y-1/2 transform p-2 text-black opacity-45">
@@ -78,7 +78,7 @@ export default function Test() {
         ) : (
           <div className="flex flex-col gap-2 rounded-lg bg-white px-10 py-4 text-black shadow-2xl">
             <p className="font-semibold">빠르게 식당 검색</p>
-            <div className="flex gap-3 justify-center">
+            <div className="flex justify-center gap-3">
               <SearchRestaurant />
               <SearchCalendar />
               <SearchUserCount />

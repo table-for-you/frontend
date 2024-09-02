@@ -2,7 +2,7 @@ export default function searchRank({ onSelectRegion }) {
   const regions = ["대구", "부산", "서울", "제주", "전주"];
 
   return (
-    <div className="flex flex-col gap-4 ">
+    <div className="flex flex-col gap-4">
       <div>
         <span className="font-bold">인기 지역 순위</span>
       </div>

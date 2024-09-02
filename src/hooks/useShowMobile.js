@@ -4,7 +4,8 @@ export function useShowMobile() {
   const [showMobile, setShowMobile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => { // 아이패드 에어 모바일로 간주
+  useEffect(() => {
+    // 아이패드 에어 모바일로 간주
     const handleSize = () => {
       if (window.matchMedia("(max-width: 820px)").matches) {
         setShowMobile(true);

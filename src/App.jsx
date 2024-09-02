@@ -5,6 +5,7 @@ import NotFound from "./pages/NotFound";
 import Region from "./pages/Region";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
+import RestaurantRegister from "./pages/owner/RestaurantRegister";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -20,6 +21,10 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />}></Route>
           <Route path="/region/:name" element={<Region />}></Route>
           <Route path="*" element={<NotFound />}></Route>
+          <Route
+            path="/restaurant/register"
+            element={<RestaurantRegister />}
+          ></Route>
         </Routes>
       </BrowserRouter>
     </>

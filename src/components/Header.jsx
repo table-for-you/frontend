@@ -6,8 +6,9 @@ import { btn, tomatoBtn } from "../constants/style";
 import { api } from "../services/api";
 import Modal from "./Modal";
 import { useShowMobile } from "../hooks/useShowMobile";
+import { decodeToken } from "../utils/decodeToken";
 
-export default function Header({ test }) {
+export default function Header() {
   const [menuBar, setMenuBar] = useState(false);
   const navigate = useNavigate();
   const { authenticated, nickname, accessToken } = useSelector(
@@ -32,6 +33,18 @@ export default function Header({ test }) {
       duration: 0.5,
     },
   };
+
+  useEffect(() => {
+    if (accessToken) {
+      const decoded = decodeToken(JSON.stringify(accessToken));
+      if (decoded) {
+        console.log("Decoded Token:", decoded);
+        console.log(decoded.role);
+      } else {
+        console.log("Invalid token");
+      }
+    }
+  }, [accessToken]);
 
   // const logout = () => {
   //   try {

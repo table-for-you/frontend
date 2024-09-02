@@ -22,14 +22,14 @@ export default function SearchRestaurant() {
       </span>
       <input
         type="text"
-        className={`${inputStyle} cursor-pointer pl-8 text-[1rem] active:bg-white w-full`}
+        className={`${inputStyle} w-full cursor-pointer pl-8 text-[1rem] active:bg-white`}
         placeholder="원하시는 식당을 검색해 주세요."
         value={rankInputValue}
         onClick={() => setShowRank(!showRank)}
         onChange={handleRegionChange}
       />
       {showRank && (
-        <div className="absolute rounded-lg bg-white p-2 text-sm w-full z-30">
+        <div className="absolute z-30 w-full rounded-lg bg-white p-2 text-sm">
           {showRank && <SearchRank onSelectRegion={handleSelectRegion} />}
         </div>
       )}

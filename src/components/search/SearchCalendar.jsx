@@ -15,14 +15,14 @@ export default function SearchCalendar() {
     <div className="relative">
       <input
         type="text"
-        className={`${inputStyle} cursor-pointer text-[1rem] active:bg-white w-full`}
+        className={`${inputStyle} w-full cursor-pointer text-[1rem] active:bg-white`}
         onClick={() => setShowCalendar(!showCalendar)}
         placeholder="날짜를 선택해 주세요."
         value={selectedDate}
         readOnly
       />
       {showCalendar && (
-        <div className="absolute overflow-y-auto rounded-lg bg-white p-2 text-xs w-full z-20">
+        <div className="absolute z-20 w-full overflow-y-auto rounded-lg bg-white p-2 text-xs">
           <Calendar onDateClick={onDateClick} />
         </div>
       )}

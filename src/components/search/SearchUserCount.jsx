@@ -18,13 +18,13 @@ export default function SearchUserCount() {
       <input
         type="text"
         value={`인원 ${userCount}`}
-        className={`${inputStyle} cursor-pointer text-[1rem] active:bg-white w-full`}
+        className={`${inputStyle} w-full cursor-pointer text-[1rem] active:bg-white`}
         onClick={() => setShowUser(!showUser)}
         readOnly
       />
 
       {showUser && (
-        <div className="absolute rounded-lg bg-white p-2 text-sm w-full">
+        <div className="absolute w-full rounded-lg bg-white p-2 text-sm">
           <span>인원</span>
           <div className="flex justify-between">
             <p className="text-xs font-bold opacity-35">
