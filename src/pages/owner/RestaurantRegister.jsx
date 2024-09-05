@@ -1,16 +1,55 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DaumPostcode from "react-daum-postcode";
-import { btn, inputStyle, tomatoBtn } from "../../constants/style";
+import { btn, inputStyle, tomatoBtn, } from "../../constants/style";
 import ImageUploader from "../../components/slide/ImageUploader";
 import Button from "../../components/Button";
-
+import { useForm } from "react-hook-form";
+import { useSelector, useDispatch } from "react-redux";
+import { decodeToken } from "../../utils/decodeToken";
+import { useNavigate } from "react-router-dom";
 const { kakao } = window;
 
+
+
 export default function RestaurantRegister() {
+  const { accessToken } = useSelector(
+    (state) => state.authToken,
+  );
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (accessToken) {
+      const decoded = decodeToken(JSON.stringify(accessToken));
+      if (decoded.role === "OWNER") {
+        console.log('owner임')
+      } else {
+        alert("권한이 없습니다.");
+        navigate("/");
+      }
+    } else {
+      alert("권한이 없습니다.");
+      navigate("/");
+    }
+  }, [accessToken, navigate]);
+
+
+
+
+
+  const {
+    register,
+    watch,
+    handleSubmit,
+    clearErrors,
+    formState: { errors, isSubmitted, },
+  } = useForm();
   const [selectedRegion, setSelectedRegion] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
+  const [isParking, setIsParking] = useState(false);
   const [address, setAddress] = useState("");
+  const [images, setImages] = useState([null, null, null, null]);
 
   const regionItems = [
     { id: "seoul", name: "서울" },
@@ -31,6 +70,9 @@ export default function RestaurantRegister() {
     { id: "chungbuk", name: "충북" },
     { id: "sejong", name: "세종" },
   ];
+
+
+
 
   const getAddressCoords = (address) => {
     return new Promise((resolve, reject) => {
@@ -80,6 +122,17 @@ export default function RestaurantRegister() {
     setIsPostcodeOpen(false);
   };
 
+  const handleParkingCheck = () => {
+    setIsParking(!isParking);
+  }
+
+
+  const onSubmit = (data) => {
+    console.log(data);
+  }
+
+
+
   return (
     <div className="px-5 pt-5 md:px-14 lg:px-28 xl:px-44 2xl:px-72">
       <div className="mb-5">
@@ -104,15 +157,23 @@ export default function RestaurantRegister() {
           </div>
         </div>
       </div>
-      <form onSubmit={(e) => e.preventDefault()}>
+      <form onSubmit={handleSubmit(onsubmit)} noValidate>
         <div className="flex flex-col gap-3">
           <label htmlFor="restaurant-title">가게명</label>
-          <input
-            type="text"
-            id="restaurant-title"
-            className="rounded-lg border p-2"
-            placeholder="테이블포유 레스토랑"
-          />
+          <div className="relative flex">
+            <input
+              type="text"
+              id="title"
+              className="rounded-lg border p-2 w-full"
+              placeholder="테이블포유 레스토랑"
+              {...register("title", {
+                required: "가게명을 입력해주세요."
+              })}
+            />
+          </div>
+          {errors.title && (
+            <small className="text-red-500">{errors.title.message}</small>
+          )}
 
           <label htmlFor="restaurant-region">지역</label>
           <div className="relative">
@@ -137,6 +198,9 @@ export default function RestaurantRegister() {
               </ul>
             )}
           </div>
+          {!selectedRegion && isSubmitted && (
+            <small className="text-red-500">지역을 선택해주세요</small>
+          )}
 
           <label htmlFor="location">상세 주소</label>
           <div className="flex">
@@ -147,14 +211,19 @@ export default function RestaurantRegister() {
               onChange={(e) => setAddress(e.target.value)}
               className={`${inputStyle} flex-1`}
               placeholder="강남구 테헤란로"
+              readOnly
             />
             <Button
               className={`${btn}`}
               onClick={() => setIsPostcodeOpen(true)}
+              type="button"
             >
               찾기
             </Button>
           </div>
+          {!address && isSubmitted && (
+            <small className="text-red-500">상세주소를 입력해주세요.</small>
+          )}
 
           {isPostcodeOpen && (
             <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50">
@@ -172,24 +241,81 @@ export default function RestaurantRegister() {
 
           <label htmlFor="time">영업 시간</label>
           <div className="flex items-center gap-1">
-            <input type="time" id="time" className={`${inputStyle} w-[50%]`} />
+            <input
+              type="time"
+              id="open-time"
+              className={`${inputStyle} w-[50%]`}
+              {...register('open-time', {
+                required: true
+              })}
+            />
             <span className="text-lg">~</span>
-            <input type="time" id="time" className={`${inputStyle} w-[50%]`} />
+            <input
+              type="time"
+              id="close-time"
+              className={`${inputStyle} w-[50%]`}
+              {...register('close-time', {
+                required: true
+              })}
+            />
           </div>
+
+          {isSubmitted && (!watch('open-time') || !watch('close-time')) && (
+            <small className="text-red-500">영업시간을 입력해주세요.</small>
+          )}
+
 
           <label htmlFor="tel">가게 번호</label>
           <div className="flex items-center gap-1">
-            <input type="text" className={`${inputStyle} w-[33%]`} placeholder="010" />
+            <input
+              type="text"
+              className={`${inputStyle} w-[33%]`}
+              placeholder="02"
+              id="bn"
+              {...register('bn', {
+                required: true
+              })}
+            />
             <span className="text-lg">-</span>
-            <input type="text" className={`${inputStyle} w-[33%]`} placeholder="1234" />
+            <input
+              type="text"
+              className={`${inputStyle} w-[33%]`}
+              placeholder="1234"
+              id="mn"
+              {...register('mn', {
+                required: true
+              })}
+            />
             <span className="text-lg">-</span>
-            <input type="text" className={`${inputStyle} w-[33%]`} placeholder="5678" />
+            <input
+              type="text"
+              className={`${inputStyle} w-[33%]`}
+              placeholder="5678"
+              id="en"
+              {...register('en', {
+                required: true
+              })}
+            />
           </div>
+          {isSubmitted && (!watch('bn') || !watch('mn') || !watch('en')) && (
+            <small className="text-red-500">가게번호를 입력해주세요.</small>
+          )}
 
-          <label htmlFor="picture">가게 사진</label>
-          <ImageUploader />
+          <label htmlFor="picture">가게 대표 사진</label>
+          <ImageUploader
+            images={images}
+            setImages={(newImages) => {
+              setImages(newImages);
+              if (newImages.some(img => img !== null)) {
+                clearErrors("images");
+              }
+            }}
+          />
+          {isSubmitted && images.some(img => img === null) && (
+            <small className="text-red-500">가게 대표 사진을 4장 등록해주세요.</small>
+          )}
 
-          <select name="" id="" className={`${inputStyle}`}>
+          <select name="" id="food-list" className={`${inputStyle}`}>
             <option value="">한식</option>
             <option value="">중식</option>
             <option value="">일식</option>
@@ -197,27 +323,66 @@ export default function RestaurantRegister() {
           </select>
 
           <label htmlFor="seat">좌석</label>
-          <input type="number" name="" id="seat" min={1} className={`${inputStyle}`} placeholder="1" />
+          <input
+            type="number"
+            id="seat"
+            min={1}
+            className={`${inputStyle}`}
+            placeholder="1"
+            {...register("seat", {
+              required: "좌석을 입력해주세요",
+              min: {
+                value: 1,
+                message: "좌석 수는 최소 1 이상이어야 합니다."
+              }
+            })}
+          />
+          {isSubmitted && errors.seat && (
+            <small className="text-red-500">{errors.seat.message}</small>
+          )}
 
 
           <div className="flex items-center justify-between">
             <label htmlFor="parking">주차 가능 여부</label>
-            <input type="checkbox" name="" id="parking" className="w-7 h-7" />
+            <input
+              type="checkbox"
+              id="parking"
+              checked={isParking}
+              className="h-7 w-7"
+              onChange={handleParkingCheck}
+            />
+
           </div>
 
           <label htmlFor="description">가게 설명</label>
-          <textarea name="" id="description" className="resize-none h-40 bg-neutral-100 rounded-lg p-4" placeholder="가게에 대한 설명을 적어주세요."></textarea>
+          <textarea
+            name=""
+            id="description"
+            className="h-40 resize-none rounded-lg bg-neutral-100 p-4"
+            placeholder="가게에 대한 설명을 적어주세요."
+            {...register('description', {
+              required: "가게 설명을 적어주세요."
+            })}
+          ></textarea>
+          {isSubmitted && errors.description && (
+            <small className="text-red-500">{errors.description.message}</small>
+          )}
+
 
           <div>
-            <p className="text-sm opacity-40 font-bold mb-2">승인 검토는 최대 3일 요소되며, <br />결과는 마이페이지에서 확인할 수 있습니다.</p>
-            <Button className={tomatoBtn} style={`w-full`}>
+            <p className="mb-2 text-sm font-bold opacity-40">
+              승인 검토는 최대 3일 요소되며, <br />
+              결과는 마이페이지에서 확인할 수 있습니다.
+            </p>
+            <Button
+              className={tomatoBtn}
+              style={`w-full`}
+            >
               등록하기
             </Button>
           </div>
         </div>
-
       </form>
     </div>
   );
 }
-
