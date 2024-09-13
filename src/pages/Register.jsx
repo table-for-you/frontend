@@ -119,7 +119,7 @@ export default function Register() {
     }
   };
 
-  const singUp = async () => {
+  const signUp = async () => {
     const data = {
       nickname: watch("nickname"),
       username: watch("id"),
@@ -481,7 +481,7 @@ export default function Register() {
               errors.age ||
               watch("age") === ""
             }
-            onClick={singUp}
+            onClick={signUp}
           >
             회원가입
           </Button>

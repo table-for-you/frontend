@@ -14,6 +14,7 @@ export default function Header() {
   const { authenticated, nickname, accessToken } = useSelector(
     (state) => state.authToken,
   );
+  const [token, setToken] = useState(null);
 
   const inView = useSelector((state) => state.inView);
 
@@ -38,8 +39,7 @@ export default function Header() {
     if (accessToken) {
       const decoded = decodeToken(JSON.stringify(accessToken));
       if (decoded) {
-        console.log("Decoded Token:", decoded);
-        console.log(decoded.role);
+        setToken(decoded);
       } else {
         console.log("Invalid token");
       }
@@ -99,6 +99,41 @@ export default function Header() {
                   <div className="mt- cursor-pointer border-b p-2 text-sm hover:bg-gray-100">
                     <p>로그아웃</p>
                   </div>
+                  {token.role === "OWNER" && (
+                    <>
+                      <div
+                        className="mt- cursor-pointer border-b p-2 text-sm hover:bg-gray-100"
+                        onClick={() => {
+                          navigate("/owner/restaurant/register"),
+                            setMenuBar(false);
+                        }}
+                      >
+                        <p>식당 추가</p>
+                      </div>
+                      <div
+                        className="mt- cursor-pointer border-b p-2 text-sm hover:bg-gray-100"
+                        onClick={() => {
+                          navigate("/owner/my-restaurant"), setMenuBar(false);
+                        }}
+                      >
+                        <p>나의 가게</p>
+                      </div>
+                    </>
+                  )}
+
+                  {token.role === "ADMIN" && (
+                    <>
+                      <div
+                        className="mt- cursor-pointer border-b p-2 text-sm hover:bg-gray-100"
+                        onClick={() => {
+                          navigate("admin/restaurant/manage"),
+                            setMenuBar(false);
+                        }}
+                      >
+                        <p>식당 승인 관리</p>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -143,6 +178,42 @@ export default function Header() {
                     >
                       로그아웃
                     </Button>
+
+                    {token.role === "OWNER" && (
+                      <>
+                        <Button
+                          onClick={() => {
+                            navigate("owner/restaurant/register"),
+                              setIsModalOpen(false);
+                          }}
+                          style={`${tomatoBtn} w-full`}
+                        >
+                          식당 추가
+                        </Button>
+
+                        <Button
+                          onClick={() => {
+                            navigate("/owner/my-restaurant"),
+                              setIsModalOpen(false);
+                          }}
+                          style={`${tomatoBtn} w-full`}
+                        >
+                          나의 가게
+                        </Button>
+                      </>
+                    )}
+
+                    {token.role === "ADMIN" && (
+                      <Button
+                        onClick={() => {
+                          navigate("admin/restaurant/manage"),
+                            setIsModalOpen(false);
+                        }}
+                        style={`${tomatoBtn} w-full`}
+                      >
+                        식당 승인 관리
+                      </Button>
+                    )}
                   </div>
                 ) : (
                   <div className="mt-10 flex p-2">
@@ -158,7 +229,7 @@ export default function Header() {
                 )}
               </Modal>
             )}
-          </> //
+          </>
         )}
       </div>
     </header>

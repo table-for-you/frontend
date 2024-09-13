@@ -37,7 +37,7 @@ export default function Login() {
       if (res.status >= 200 && res.status < 300) {
         const { accessToken, nickname } = res.data;
         dispatch(SET_TOKEN({ token: accessToken, nickname }));
-        navigate("/restaurant/register");
+        navigate("/");
       }
     } catch (err) {
       setLoginErrorMessage(err.response.data.message);

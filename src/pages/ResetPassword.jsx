@@ -127,9 +127,10 @@ export default function ResetPassword() {
       <Modal
         modalOpen={isModalOpen}
         setModalOpen={setIsModalOpen}
-        className={
-          "relative flex flex-col rounded-lg bg-white p-5 shadow-lg sm:h-1/4"
+        parentClass={
+          "fixed z-50 inset-0 bg-black bg-opacity-50 flex items-center justify-center"
         }
+        childClass={"relative bg-neutral-100 p-6 rounded-lg text-center"}
         contentMotion={contentMotion}
       >
         <div className="mb-2 flex flex-grow flex-col items-center justify-center">

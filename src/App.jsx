@@ -5,7 +5,11 @@ import NotFound from "./pages/NotFound";
 import Region from "./pages/Region";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
+import RestaurantManage from "./pages/admin/RestaurantManage";
 import RestaurantRegister from "./pages/owner/RestaurantRegister";
+import MyRestaurant from "./pages/owner/MyRestaurant";
+import RestaurantDetails from "./pages/admin/RestaurantDetails";
+import RegionDetail from "./pages/RegionDetail";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -20,10 +24,20 @@ function App() {
           <Route path="/register" element={<Register />}></Route>
           <Route path="/reset-password" element={<ResetPassword />}></Route>
           <Route path="/region/:name" element={<Region />}></Route>
+          <Route path="/region/:name/restaurant/:restaurantId" element={<RegionDetail />} />
           <Route path="*" element={<NotFound />}></Route>
           <Route
-            path="/restaurant/register"
+            path="/owner/restaurant/register"
             element={<RestaurantRegister />}
+          ></Route>
+          <Route path="/owner/my-restaurant" element={<MyRestaurant />}></Route>
+          <Route
+            path="admin/restaurant/manage"
+            element={<RestaurantManage />}
+          ></Route>
+          <Route
+            path="/admin/restaurant/manage/detail/:restaurantId"
+            element={<RestaurantDetails />}
           ></Route>
         </Routes>
       </BrowserRouter>
