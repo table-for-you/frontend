@@ -40,15 +40,15 @@ export default function KakaoMap({ size }) {
       <div id="map" className={`${size}`}></div>
       <span
         className="material-symbols-outlined absolute bottom-3 right-11 z-50 cursor-pointer rounded-full bg-black text-white opacity-30"
-        onClick={zoomIn}
-      >
-        add
-      </span>
-      <span
-        className="material-symbols-outlined absolute bottom-3 right-3 z-50 cursor-pointer rounded-full bg-black text-white opacity-30"
         onClick={zoomOut}
       >
         remove
+      </span>
+      <span
+        className="material-symbols-outlined absolute bottom-3 right-3 z-50 cursor-pointer rounded-full bg-black text-white opacity-30"
+        onClick={zoomIn}
+      >
+        add
       </span>
     </div>
   );

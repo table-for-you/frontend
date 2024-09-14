@@ -24,7 +24,10 @@ function App() {
           <Route path="/register" element={<Register />}></Route>
           <Route path="/reset-password" element={<ResetPassword />}></Route>
           <Route path="/region/:name" element={<Region />}></Route>
-          <Route path="/region/:name/restaurant/:restaurantId" element={<RegionDetail />} />
+          <Route
+            path="/region/:name/restaurant/:restaurantId"
+            element={<RegionDetail />}
+          />
           <Route path="*" element={<NotFound />}></Route>
           <Route
             path="/owner/restaurant/register"
