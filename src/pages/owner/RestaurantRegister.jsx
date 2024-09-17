@@ -35,7 +35,7 @@ export default function RestaurantRegister() {
     clearErrors,
     formState: { errors, isSubmitted },
   } = useForm();
-  const [selectedRegion, setSelectedRegion] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
   const [isParking, setIsParking] = useState(false);
@@ -43,7 +43,7 @@ export default function RestaurantRegister() {
   const [images, setImages] = useState([null, null, null, null]);
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
-  const [selectedFood, setSelectedFood] = useState(null);
+  const [selectedFood, setSelectedFood] = useState('한식');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const regionItems = [
