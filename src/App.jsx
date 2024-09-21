@@ -11,6 +11,9 @@ import MyRestaurant from "./pages/owner/MyRestaurant";
 import RestaurantDetails from "./pages/admin/RestaurantDetails";
 import RegionDetail from "./pages/RegionDetail";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Notifications from "./pages/owner/Notifications";
+import DetailNotifications from "./pages/owner/DetailNotifications";
+import RejectRestaurant from "./pages/owner/RejectRestaurant";
 
 function App() {
   return (
@@ -33,7 +36,23 @@ function App() {
             path="/owner/restaurant/register"
             element={<RestaurantRegister />}
           ></Route>
-          <Route path="/owner/my-restaurant" element={<MyRestaurant />}></Route>
+          <Route
+            path="/owner/my-restaurant"
+            element={<MyRestaurant />}>
+          </Route>
+          <Route
+            path="/owner/reject-restaurant"
+            element={<RejectRestaurant />}
+          >
+          </Route>
+          <Route
+            path="/owner/notifications"
+            element={<Notifications />}
+          ></Route>
+          <Route
+            path="/owner/notifications/detail/:notificationId"
+            element={<DetailNotifications />}
+          ></Route>
           <Route
             path="admin/restaurant/manage"
             element={<RestaurantManage />}
@@ -42,6 +61,7 @@ function App() {
             path="/admin/restaurant/manage/detail/:restaurantId"
             element={<RestaurantDetails />}
           ></Route>
+
         </Routes>
       </BrowserRouter>
     </>

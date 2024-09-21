@@ -10,6 +10,15 @@ export default function Region() {
   const [restaurantList, setRestaurantList] = useState([]);
   const { name } = useParams();
   const [isLoading, setIsLoading] = useState(true);
+  const [foodType, setFoodType] = useState(null);
+
+
+  const foodTypeMap = {
+    'KOREAN': '한식',
+    'CHINESE': '중식',
+    'JAPANESE': '일식',
+    'WESTERN': '양식'
+  }
 
   useEffect(() => {
     const fetchRestaurantList = async () => {
@@ -20,7 +29,6 @@ export default function Region() {
         };
         const res = await api.get("/public/restaurants", { params });
         setRestaurantList(res.data.content);
-        console.log(res.data.content);
       } catch (err) {
         console.error(err);
       } finally {
@@ -52,13 +60,13 @@ export default function Region() {
                 className="flex cursor-pointer flex-col gap-1 px-6 py-8 shadow-lg sm:flex-row"
                 onClick={() => handleShowRestaurantDetail(restaurant.id)}
               >
-                <div>
-                  <img src="/src/assets/test.jpg" className="rounded-lg" />
+                <div className="w-[300px] h-[196px]">
+                  <img src={restaurant.mainImage} className="rounded-lg" />
                 </div>
                 <div className="flex flex-col sm:ml-5 text-lg gap-1">
                   <div className="flex items-center gap-1 font-bold">
                     <span>{restaurant.name}</span>
-                    <span className="text-xs opacity-50">{restaurant.foodType}</span>
+                    <span className="text-xs opacity-50">{foodTypeMap[restaurant.foodType]}</span>
                   </div>
                   <Rating rating={restaurant.rating} ratingNum={restaurant.ratingNum} />
                   <span className="text-sm opacity-50">

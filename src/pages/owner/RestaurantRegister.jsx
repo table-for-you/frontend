@@ -32,6 +32,7 @@ export default function RestaurantRegister() {
     register,
     watch,
     handleSubmit,
+    setError,
     clearErrors,
     formState: { errors, isSubmitted },
   } = useForm();
@@ -40,10 +41,11 @@ export default function RestaurantRegister() {
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
   const [isParking, setIsParking] = useState(false);
   const [address, setAddress] = useState("");
+  const [mainImage, setMainImage] = useState([null]);
   const [images, setImages] = useState([null, null, null, null]);
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
-  const [selectedFood, setSelectedFood] = useState('한식');
+  const [selectedFood, setSelectedFood] = useState('KOREAN');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const regionItems = [
@@ -130,6 +132,8 @@ export default function RestaurantRegister() {
   };
 
   const onSubmit = async () => {
+
+    const formData = new FormData();
     const data = {
       name: watch("title"),
       region: selectedRegion,
@@ -144,21 +148,34 @@ export default function RestaurantRegister() {
       parking: isParking,
     };
 
-    // `Authorization` 헤더에 accessToken 추가
+    if (mainImage[0]) {
+      formData.append("mainImage", mainImage[0].file);
+    } 
+
+
+    // 서브 이미지 추가
+    images.forEach((image, index) => {
+      if (image) {
+        formData.append("subImages", image.file); // subImages 배열에 이미지 추가
+      } 
+    });
+    formData.append('dto', new Blob([JSON.stringify(data)], { type: 'application/json' }));
+
     const config = {
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `${accessToken.token}`, // accessToken을 헤더에 추가
+        // "Content-Type": "multipart/form-data",
+        Authorization: `${accessToken.token}`,
       },
     };
 
     try {
-      const res = await api.post("/owner/restaurants", data, config); // 요청 보내기
+      const res = await api.post("/owner/restaurants", formData, config);
       if (res.status === 200) {
         setIsModalOpen(true);
       }
     } catch (err) {
       console.error(err);
+
     }
   };
 
@@ -333,19 +350,44 @@ export default function RestaurantRegister() {
               <small className="text-red-500">가게번호를 입력해주세요.</small>
             )}
 
-            <label htmlFor="picture">가게 대표 사진</label>
+            <label htmlFor="mainImage">가게 대표 사진 (썸네일용)</label>
+            <ImageUploader
+              images={mainImage}
+              setImages={(newImages) => {
+                setMainImage(newImages);
+                if (newImages.some((img) => img === null)) {
+                  setError("mainImage");
+                } else {
+                  clearErrors('mainImage');
+                }
+              }}
+            />
+            {isSubmitted && mainImage.some((img) => img === null) && (
+              <small className="text-red-500">
+                가게 대표 사진을 등록해주세요.
+              </small>
+            )}
+
+            <label htmlFor="subImage">가게 소개 사진</label>
             <ImageUploader
               images={images}
               setImages={(newImages) => {
                 setImages(newImages);
-                if (newImages.some((img) => img !== null)) {
-                  clearErrors("images");
+                if (newImages.some((img) => img === null)) {
+                  setError("images");
+                } else {
+                  clearErrors('images');
                 }
               }}
             />
+
+            <p className="text-sm font-bold opacity-40">
+              각 이미지의 크기는 2MB 이하로 업로드 해주세요.
+            </p>
+
             {isSubmitted && images.some((img) => img === null) && (
               <small className="text-red-500">
-                가게 대표 사진을 4장 등록해주세요.
+                가게 소개 사진을 4장 등록해주세요.
               </small>
             )}
 
@@ -355,10 +397,10 @@ export default function RestaurantRegister() {
               value={selectedFood}
               onChange={(e) => setSelectedFood(e.target.value)}
             >
-              <option value="한식">한식</option>
-              <option value="중식">중식</option>
-              <option value="일식">일식</option>
-              <option value="양식">양식</option>
+              <option value="KOREAN">한식</option>
+              <option value="CHINESE">중식</option>
+              <option value="JAPANESE">일식</option>
+              <option value="WESTERN">양식</option>
             </select>
 
             <label htmlFor="seat">좌석</label>
@@ -446,4 +488,3 @@ export default function RestaurantRegister() {
   );
 }
 
-// 추후 가게 사진 필수 등록

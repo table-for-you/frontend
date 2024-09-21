@@ -13,8 +13,16 @@ export default function RestaurantDetails() {
   const [restaurantDetails, setRestaurantDetails] = useState(null);
   const { accessToken } = useSelector((state) => state.authToken);
   const [isLoading, setIsLoading] = useState(true);
+  const [foodType, setFoodType] = useState(null);
 
   const navigate = useNavigate();
+
+  const foodTypeMap = {
+    'KOREAN': '한식',
+    'CHINESE': '중식',
+    'JAPANESE': '일식',
+    'WESTERN': '양식'
+  }
 
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
@@ -33,7 +41,7 @@ export default function RestaurantDetails() {
               config,
             );
             setRestaurantDetails(res.data);
-            console.log(res.data);
+            setFoodType(foodTypeMap[res.data.foodType]);
           } catch (err) {
             console.error(err.response.data.message);
           } finally {
@@ -56,9 +64,10 @@ export default function RestaurantDetails() {
       },
     };
 
+
     try {
       const res = await api.patch(
-        `/admin/restaurants/${restaurantId}`,
+        `/admin/restaurants/${restaurantId}?status=APPROVED`,
         {},
         config,
       );
@@ -76,9 +85,11 @@ export default function RestaurantDetails() {
       },
     };
 
+
     try {
-      const res = await api.delete(
-        `/admin/restaurants/${restaurantId}`,
+      const res = await api.patch(
+        `/admin/restaurants/${restaurantId}?status=REJECT`,
+        {},
         config,
       );
       alert(JSON.stringify(res.data.response));
@@ -88,15 +99,38 @@ export default function RestaurantDetails() {
     }
   };
 
+  const pendingRestaurant = async () => {
+    const config = {
+      headers: {
+        Authorization: `${accessToken.token}`,
+      },
+    };
+
+
+    try {
+      const res = await api.patch(
+        `/admin/restaurants/${restaurantId}?status=PENDING`,
+        {},
+        config,
+      );
+      alert(JSON.stringify(res.data.response));
+      navigate("/admin/restaurant/manage");
+    } catch (err) {
+      console.log(err.response.data.message);
+    }
+  };
+
+
+
   return (
     <div className="px-5 pt-5 md:px-14 lg:px-28 xl:px-44 2xl:px-72">
       {isLoading ?
         <Loading /> :
         <div>
-          <RestaurantSlider />
+          <RestaurantSlider mainImage={restaurantDetails.mainImage} subImages={restaurantDetails.subImages} />
           <div className="flex flex-col gap-1">
             <span className="text-sm opacity-50">
-              {restaurantDetails.foodType}
+              {foodType}
             </span>
             <span className="text-lg font-bold">
               {restaurantDetails.name}
@@ -140,17 +174,22 @@ export default function RestaurantDetails() {
               <p>{restaurantDetails.description}</p>
             </div>
           </div>
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-3 mt-3">
             <Button
               onClick={approveRestaurant}
               className={`${tomatoBtn} px-4 py-2`}
             >
               승인하기
             </Button>
+            <Button
+              onClick={pendingRestaurant}
+              
+            >
+              보류하기
+            </Button>
             <Button onClick={rejectRestaurant}>거절하기</Button>
           </div>
         </div>
-
       }
     </div>
   );

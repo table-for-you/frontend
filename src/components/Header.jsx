@@ -89,7 +89,7 @@ export default function Header() {
                 <span className="material-symbols-outlined">menu</span>
               </div>
               {menuBar && (
-                <div className="absolute h-40 w-[15vw] rounded-lg bg-white shadow-md">
+                <div className="absolute h-auto w-[15vw] rounded-lg bg-white shadow-md">
                   <div className="flex cursor-pointer items-center justify-between border-b p-2 text-sm hover:bg-gray-100">
                     <p>{nickname}님 반가워요👋</p>
                     <span className="material-symbols-outlined cursor-pointer">
@@ -117,6 +117,14 @@ export default function Header() {
                         }}
                       >
                         <p>나의 가게</p>
+                      </div>
+                      <div
+                        className="mt- cursor-pointer border-b p-2 text-sm hover:bg-gray-100"
+                        onClick={() => {
+                          navigate("/owner/notifications"), setMenuBar(false);
+                        }}
+                      >
+                        <p>알림함</p>
                       </div>
                     </>
                   )}
@@ -199,6 +207,15 @@ export default function Header() {
                           style={`${tomatoBtn} w-full`}
                         >
                           나의 가게
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            navigate("/owner/notifications"),
+                              setIsModalOpen(false);
+                          }}
+                          style={`${tomatoBtn} w-full`}
+                        >
+                          알림함
                         </Button>
                       </>
                     )}
