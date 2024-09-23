@@ -27,7 +27,6 @@ export default function Notifications() {
                     try {
                         const res = await api.get("/users/notifications", config);
                         setNotifications(res.data.content);
-                        console.log(res.data.content);
                     } catch (err) {
                         console.error(err);
                     } finally {
@@ -56,15 +55,15 @@ export default function Notifications() {
                 <div className="flex flex-col gap-5">
                     <div>
                         <p className="text-lg mb-5">안 읽은 알림</p>
-                        {unreadNotifications.map((notification) => (
+                        {unreadNotifications.filter((notification) => notification.status !== 'PENDING').map((notification) => (
                             <div
                                 key={notification.id}
                                 className="flex justify-between rounded-lg bg-neutral-100 p-5 shadow-lg mb-2 items-center"
                             >
-                                {notification.status === 'PENDING' ?
-                                    <p>가게 승인 보류중입니다.</p> :
+                                <div>
                                     <p>{notification.content}</p>
-                                }
+                                    {notification.createdTime.split('T')[0]}
+                                </div>
                                 <Button
                                     className={tomatoBtn}
                                     style={"p-3 text-sm"}
@@ -77,15 +76,15 @@ export default function Notifications() {
                     </div>
                     <div>
                         <p className="text-lg mb-5">읽은 알림</p>
-                        {readNotifications.map((notification) => (
+                        {readNotifications.filter((notification) => notification.status !== 'PENDING').map((notification) => (
                             <div
                                 key={notification.id}
                                 className="flex justify-between rounded-lg bg-neutral-100 p-5 shadow-lg mb-2 items-center"
                             >
-                                {notification.status === 'PENDING' ?
-                                    <p>가게 승인 보류중입니다.</p> :
+                                <div>
                                     <p>{notification.content}</p>
-                                }
+                                    {notification.createdTime.split('T')[0]}
+                                </div>
                                 <Button
                                     className={tomatoBtn}
                                     style={"p-3 text-sm"}

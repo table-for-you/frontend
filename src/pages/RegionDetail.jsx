@@ -10,6 +10,12 @@ export default function RegionDetail() {
   const [restaurantDetails, setRestaurantDetails] = useState([]);
   const { restaurantId } = useParams();
   const [isLoading, setIsLoading] = useState(true);
+  const foodTypeMap = {
+    'KOREAN': '한식',
+    'CHINESE': '중식',
+    'JAPANESE': '일식',
+    'WESTERN': '양식'
+  }
 
   useEffect(() => {
     const fetchRegionDetailRestaurant = async () => {
@@ -31,10 +37,10 @@ export default function RegionDetail() {
         <Loading /> :
         <>
           <div className="border-b">
-            <RestaurantSlider />
+            <RestaurantSlider mainImage={restaurantDetails.mainImage} subImages={restaurantDetails.subImages} />
             <div className="flex flex-col gap-1">
               <span className="text-sm opacity-50">
-                {restaurantDetails.foodType}
+                {foodTypeMap[restaurantDetails.foodType]}
               </span>
               <span className="text-lg font-bold">
                 {restaurantDetails.name}

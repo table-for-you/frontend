@@ -4,6 +4,9 @@ import { decodeToken } from "../../utils/decodeToken";
 import { api } from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading";
+import Button from "../../components/Button";
+import { tomatoBtn } from "../../constants/style";
+
 
 export default function RejectRestaurant() {
     const { accessToken } = useSelector((state) => state.authToken);
@@ -36,6 +39,25 @@ export default function RejectRestaurant() {
         fetchrejectRestaurant();
     }, [accessToken, navigate]);
 
+    const deleteRestaurant = async (restaurantId) => {
+        const config = {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `${accessToken.token}`,
+          },
+        };
+    
+        try {
+          const res = await api.delete(`/owner/restaurants/${restaurantId}`, config);
+          alert(JSON.stringify(res.data.response));
+          setRejectRestaurant((prevRestaurants) => (
+            prevRestaurants.filter((restaurant) => restaurant.id !== restaurantId)
+          ))
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
     return (
         <div className="px-5 pt-5 md:px-14 lg:px-28 xl:px-44 2xl:px-72">
             <p className="mb-5 text-lg">거절된 가게 목록</p>
@@ -44,10 +66,23 @@ export default function RejectRestaurant() {
                     rejectRestaurant.map((restaurant) => (
                         <div
                             key={restaurant.id}
-                            className="rounded-lg bg-neutral-100 p-6 shadow-md"
+                            className="rounded-lg bg-neutral-100 p-6 shadow-md flex justify-between items-center"
                         >
                             <p>{restaurant.name}</p>
+                            <div className="flex gap-1 mt-1 text-sm">
+                                <Button
+                                    className={tomatoBtn}
+                                    style={'p-2'}
+                                    onClick={() => navigate(`/owner/update-restaurant/${restaurant.id}`)}
+                                >
+                                    가게 업데이트
+                                </Button>
+                                <Button onClick={() => deleteRestaurant(restaurant.id)}>
+                                    가게 삭제
+                                </Button>
+                            </div>
                         </div>
+
                     ))
                 ) : (
                     <Loading />

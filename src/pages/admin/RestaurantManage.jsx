@@ -80,8 +80,8 @@ export default function RestaurantManage() {
                 </div>
               ))
             ) : (
-              <div>
-                <p>없는 표시 넣기, 로딩바도 준비</p>
+              <div className="flex justify-center items-center h-[60vh] text-xl">
+                <p>승인 요청 가게가 없습니다.</p>
               </div>
             )
           }

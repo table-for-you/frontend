@@ -160,7 +160,6 @@ export default function RestaurantRegister() {
       } 
     });
     formData.append('dto', new Blob([JSON.stringify(data)], { type: 'application/json' }));
-
     const config = {
       headers: {
         // "Content-Type": "multipart/form-data",

@@ -14,6 +14,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Notifications from "./pages/owner/Notifications";
 import DetailNotifications from "./pages/owner/DetailNotifications";
 import RejectRestaurant from "./pages/owner/RejectRestaurant";
+import UpdateRestaurant from "./pages/owner/UpdateRestaurant";
 
 function App() {
   return (
@@ -43,6 +44,11 @@ function App() {
           <Route
             path="/owner/reject-restaurant"
             element={<RejectRestaurant />}
+          >
+          </Route>
+          <Route
+            path="/owner/update-restaurant/:restaurantId"
+            element={<UpdateRestaurant />}
           >
           </Route>
           <Route
