@@ -10,6 +10,7 @@ export default function RegionDetail() {
   const [restaurantDetails, setRestaurantDetails] = useState([]);
   const { restaurantId } = useParams();
   const [isLoading, setIsLoading] = useState(true);
+  const [myMenu, setMyMenu] = useState([]);
   const foodTypeMap = {
     'KOREAN': '한식',
     'CHINESE': '중식',
@@ -28,7 +29,20 @@ export default function RegionDetail() {
         setIsLoading(false);
       }
     };
+
+    const getMyMenu = async () => {
+      try {
+        const res = await api.get(`/public/restaurants/${restaurantId}/menus`);
+        setMyMenu(res.data.content);
+        console.log(res.data.content)
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+
     fetchRegionDetailRestaurant();
+    getMyMenu();
   }, [restaurantId]);
 
   return (
@@ -36,7 +50,7 @@ export default function RegionDetail() {
       {isLoading ?
         <Loading /> :
         <>
-          <div className="border-b">
+          <div className="border-b mb-2">
             <RestaurantSlider mainImage={restaurantDetails.mainImage} subImages={restaurantDetails.subImages} />
             <div className="flex flex-col gap-1">
               <span className="text-sm opacity-50">
@@ -85,6 +99,25 @@ export default function RegionDetail() {
               </div>
             </div>
           </div>
+
+          <div className="flex flex-col gap-3">
+            <p className="text-lg">메뉴</p>
+            {myMenu.map((menu) => (
+              <div key={menu.id} className="flex flex-col justify-between gap-3 border-b-2 p-2 sm:flex-row">
+                <div className="w-full sm:w-[200px]">
+                  <img src={menu.menuImage} className="rounded-lg object-cover h-60 w-full sm:h-44" />
+                </div>
+                <div className="flex flex-col justify-between">
+                  <div className="text-lg flex flex-col justify-between h-full sm:items-end">
+                    <p >{menu.name}</p>
+                    <p>{menu.price}원</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+
         </>
       }
     </div>

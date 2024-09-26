@@ -19,10 +19,10 @@ export default function RestaurantSlider({ mainImage, subImages }) {
         <div className="relative cursor-pointer">
             <Slider {...settings}>
                 {images.map((image, index) => (
-                    <div key={index}>
+                    <div key={index} className="w-full">
                         <img
                             src={image}
-                            className="w-full h-[30vh] object-contain xl:h-[50vh]"
+                            className="w-full h-[30vh] object-cover sm:h-[50vh] sm:object-contain"
                         />
                     </div>
                 ))}

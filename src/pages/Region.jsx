@@ -10,7 +10,7 @@ export default function Region() {
   const [restaurantList, setRestaurantList] = useState([]);
   const { name } = useParams();
   const [isLoading, setIsLoading] = useState(true);
-  const [foodType, setFoodType] = useState(null);
+  const [myMenu, setMyMenu] = useState([]);
 
 
   const foodTypeMap = {
@@ -59,6 +59,7 @@ export default function Region() {
               <div
                 className="flex cursor-pointer flex-col gap-1 px-6 py-8 shadow-lg sm:flex-row"
                 onClick={() => handleShowRestaurantDetail(restaurant.id)}
+                key={restaurant.id}
               >
                 <div className="w-[300px] h-[196px]">
                   <img src={restaurant.mainImage} className="rounded-lg" />

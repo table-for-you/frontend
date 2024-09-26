@@ -15,6 +15,8 @@ import Notifications from "./pages/owner/Notifications";
 import DetailNotifications from "./pages/owner/DetailNotifications";
 import RejectRestaurant from "./pages/owner/RejectRestaurant";
 import UpdateRestaurant from "./pages/owner/UpdateRestaurant";
+import MenuManage from "./pages/owner/MenuManage";
+import MenuUpdate from "./pages/owner/MenuUpdate";
 
 function App() {
   return (
@@ -33,6 +35,8 @@ function App() {
             element={<RegionDetail />}
           />
           <Route path="*" element={<NotFound />}></Route>
+
+
           <Route
             path="/owner/restaurant/register"
             element={<RestaurantRegister />}
@@ -59,6 +63,16 @@ function App() {
             path="/owner/notifications/detail/:notificationId"
             element={<DetailNotifications />}
           ></Route>
+          <Route
+            path="/owner/menu-manage/:restaurantId"
+            element={<MenuManage />}
+          ></Route>
+          <Route
+            path="/owner/menu-manage/:restaurantId/update/:menuId"
+            element={<MenuUpdate />
+            }
+          ></Route>
+
           <Route
             path="admin/restaurant/manage"
             element={<RestaurantManage />}

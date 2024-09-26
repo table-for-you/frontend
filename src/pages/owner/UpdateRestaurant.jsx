@@ -76,7 +76,6 @@ export default function UpdateRestaurant() {
 
                     try {
                         const res = await api.get(`/public/restaurants/${restaurantId}`, config);
-                        console.log(res.data);
                         setRestaurantInfo(res.data);
                         setSelectedRegion(res.data.region);
                         setAddress(res.data.location);

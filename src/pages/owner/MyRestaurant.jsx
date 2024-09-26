@@ -65,9 +65,9 @@ export default function MyRestaurant() {
           myRestaurant.map((restaurant) => (
             <div
               key={restaurant.id}
-              className="rounded-lg bg-neutral-100 p-6 shadow-md flex justify-between items-center"
+              className="rounded-lg bg-neutral-100 p-6 shadow-md flex flex-col"
             >
-              <p>{restaurant.name}</p>
+              <p className="text-lg">{restaurant.name}</p>
               <div className="flex gap-1 mt-1 text-sm">
                 <Button
                   className={tomatoBtn}
@@ -75,6 +75,13 @@ export default function MyRestaurant() {
                   onClick={() => navigate(`/owner/update-restaurant/${restaurant.id}`)}
                 >
                   가게 업데이트
+                </Button>
+                <Button
+                  className={tomatoBtn}
+                  style={'p-2'}
+                  onClick={() => navigate(`/owner/menu-manage/${restaurant.id}`)}
+                >
+                  메뉴 관리
                 </Button>
                 <Button onClick={() => deleteRestaurant(restaurant.id)}>
                   가게 삭제
