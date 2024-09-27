@@ -17,7 +17,7 @@ export default function SearchUserCount() {
     <div className="relative">
       <input
         type="text"
-        value={`인원 ${userCount}`}
+        value={`인원 선택 : ${userCount}명`}
         className={`${inputStyle} w-full cursor-pointer text-[1rem] active:bg-white`}
         onClick={() => setShowUser(!showUser)}
         readOnly
