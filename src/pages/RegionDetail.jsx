@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import Loading from "../components/Loading";
 import RestaurantSlider from "../components/slide/RestaurantSlider";
 import Rating from "../components/Rating";
@@ -10,13 +10,25 @@ import Button from "../components/Button";
 import Modal from "../components/Modal";
 import Calendar from "../components/Calendar";
 import SearchUserCount from "../components/search/SearchUserCount";
+import { useSelector } from "react-redux";
+import DraggableScroller from "../components/DraggableScroller";
 
 export default function RegionDetail() {
+  const { accessToken } = useSelector((state) => state.authToken);
   const [restaurantDetails, setRestaurantDetails] = useState([]);
   const { restaurantId } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [myMenu, setMyMenu] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [today, setToday] = useState(new Date().toLocaleDateString('en-CA'));
+  const [selectedDate, setSelectedDate] = useState(today);
+  const [reservationsTime, setReservationTime] = useState([]);
+  const [myReservations, setMyReservations] = useState({});
+  const [restaurantWaiting, setRestaurantwaiting] = useState(null);
+  const [myWaiting, setMyWaiting] = useState(null);
+
+  const navigate = useNavigate();
+
 
   const foodTypeMap = {
     'KOREAN': '한식',
@@ -25,28 +37,51 @@ export default function RegionDetail() {
     'WESTERN': '양식'
   }
 
-  const reservationTime = [
-    '08:00',
-    '09:00',
-    '10:00',
-    '11:00',
-    '12:00',
-    '13:00',
-    '14:00',
-    '15:00',
-    '16:00',
-    '17:00',
-    '18:00',
-    '19:00',
-    '20:00',
-  ]
+  const convertTime = {
+    'NINE_AM': '09:00',
+    'TEN_AM': '10:00',
+    'ELEVEN_AM': '11:00',
+    'TWELVE_PM': '12:00',
+    'ONE_PM': '13:00',
+    'TWO_PM': '14:00',
+    'THREE_PM': '15:00',
+    'FOUR_PM': '16:00',
+    'FIVE_PM': '17:00',
+    'SIX_PM': '18:00',
+    'SEVEN_PM': '19:00',
+    'EIGHT_PM': '20:00',
+  };
+
+  const getMyWaiting = async () => {
+    const config = {
+      headers: {
+        Authorization: accessToken.token
+      }
+    }
+
+    try {
+      const res = await api.get(`/restaurants/${restaurantId}/queue-reservations-check`, config);
+      setMyWaiting(res.data.response);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const getWaiting = async () => {
+    try {
+      const res = await api.get(`/public/restaurants/${restaurantId}/waiting`);
+      setRestaurantwaiting(res.data.response);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
 
   useEffect(() => {
     const fetchRegionDetailRestaurant = async () => {
       try {
         const res = await api.get(`/public/restaurants/${restaurantId}`);
         setRestaurantDetails(res.data);
-        console.log(res.data);
       } catch (err) {
         console.error(err);
       } finally {
@@ -63,10 +98,12 @@ export default function RegionDetail() {
       }
     };
 
-
     fetchRegionDetailRestaurant();
     getMyMenu();
+    getWaiting();
+    getMyWaiting();
   }, [restaurantId]);
+
 
   const contentMotion = {
     initial: { opacity: 0, y: -200 },
@@ -79,6 +116,163 @@ export default function RegionDetail() {
       duration: 0.5,
     },
   };
+
+  const getTimeSlotReservations = async () => {
+    try {
+      const res = await api.get(`/public/restaurants/${restaurantId}/timeslot-reservations-full-check`, {
+        params: { date: selectedDate }
+      });
+      setReservationTime(Object.entries(res.data));
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const getMyReservations = async () => {
+    const config = {
+      headers: {
+        Authorization: `${accessToken.token}`,
+      },
+    };
+
+    const paramList = Object.keys(convertTime).map((timeKey) => ({
+      date: selectedDate,
+      'time-slot': timeKey,
+    }));
+
+
+    try {
+      const reservationPromises = paramList.map((params) => (
+        api.get(`/restaurants/${restaurantId}/timeslot-reservations-check`, { params, ...config })
+      ));
+
+      const results = await Promise.all(reservationPromises);
+      const reservationResults = {};
+
+      results.forEach((res, index) => {
+        const timeKey = Object.keys(convertTime)[index];
+        reservationResults[timeKey] = res.data.response;
+      })
+
+      setMyReservations(reservationResults);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleReservationClick = () => {
+    setIsModalOpen(true);
+    getTimeSlotReservations();
+    getMyReservations();
+  }
+
+  const handleDateClick = (info) => {
+    setSelectedDate(info.dateStr);
+    getTimeSlotReservations();
+    getMyReservations();
+  }
+
+  const requestReservation = async (time) => {
+    if (accessToken === null) {
+      alert("로그인 후 진행해주세요.");
+      return;
+    }
+
+    const params = {
+      'date': selectedDate,
+      'time-slot': time,
+    }
+
+    const config = {
+      headers: {
+        Authorization: `${accessToken.token}`,
+      },
+      params: params
+    }
+
+    try {
+      const res = await api.post(`/restaurants/${restaurantId}/timeslot-reservations`, null, config);
+      getTimeSlotReservations();
+      getMyReservations();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const cancelReservation = async (time) => {
+    if (accessToken === null) {
+      alert("로그인 후 진행해주세요.");
+      return;
+    }
+
+    const params = {
+      'date': selectedDate,
+      'time-slot': time,
+    }
+
+    const config = {
+      headers: {
+        Authorization: `${accessToken.token}`,
+      },
+      params: params
+    }
+
+    try {
+      const res = await api.delete(`/restaurants/${restaurantId}/timeslot-reservations`, config);
+      alert(JSON.stringify(res.data.response));
+      getTimeSlotReservations();
+      getMyReservations();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const requestWaiting = async () => {
+    if (accessToken === null) {
+      alert("로그인 후 진행해주세요.");
+      return;
+    }
+
+    const config = {
+      headers: {
+        Authorization: accessToken.token
+      }
+    }
+
+    try {
+      const res = await api.post(`/restaurants/${restaurantId}/queue-reservations`, null, config);
+      alert(JSON.stringify(res.data.response));
+      getMyWaiting();
+      getWaiting();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const cancelWaiting = async () => {
+    const config = {
+      headers: {
+        Authorization: accessToken.token
+      }
+    }
+
+    try {
+      const res = await api.delete(`/restaurants/${restaurantId}/queue-reservations`, config);
+      alert(JSON.stringify(res.data.response));
+      getMyWaiting();
+      getWaiting();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  useEffect(() => {
+    if (isModalOpen && selectedDate) {
+      getTimeSlotReservations();
+      getMyReservations();
+    }
+  }, [isModalOpen, selectedDate])
+
 
   return (
     <div className="px-5 pt-5 md:px-14 lg:px-28 xl:px-44 2xl:px-72">
@@ -131,13 +325,58 @@ export default function RegionDetail() {
                     주차 가능
                   </span>
                 )}
-                <Button
-                  className={tomatoBtn}
-                  style={`p-2 mt-6 mb-2 float-right`}
-                  onClick={() => setIsModalOpen(true)}
-                >
-                  예약하기
-                </Button>
+                {accessToken ?
+                  <div className="flex justify-end my-2 gap-2 text-sm">
+                    <Button
+                      className={tomatoBtn}
+                      onClick={handleReservationClick}
+                    >
+                      예약하기 (날짜)
+                    </Button>
+                    {myWaiting ?
+                      <Button
+                        onClick={() => {
+                          if (confirm('번호포 예약을 취소 하시겠습니까?')) {
+                            cancelWaiting();
+                          }
+                        }}
+                      >
+                        예약취소 (번호표)
+                        <p>나의 대기 번호 : {restaurantWaiting}</p>
+                      </Button> :
+
+                      <Button
+                        className={tomatoBtn}
+                        onClick={() => {
+                          if (confirm('번호포 예약을 진행 하시겠습니까?')) {
+                            requestWaiting();
+                          }
+                        }}
+                        style={`disabled:opacity-40`}
+                        disabled={restaurantWaiting >= Math.floor(restaurantDetails.totalSeats / 2)}
+                      >
+                        예약하기 (번호표)
+                        <p>{restaurantWaiting} / {Math.floor(restaurantDetails.totalSeats / 2)}</p>
+                      </Button>
+                    }
+                    <span
+                      className="material-symbols-outlined cursor-pointer"
+                      onClick={getWaiting}
+                    >
+                      refresh
+                    </span>
+                  </div>
+
+                  :
+                  <Button
+                    className={tomatoBtn}
+                    style={`float-right text-sm mt-6 mb-2`}
+                    onClick={() => navigate('/login')}
+                  >
+                    로그인 후 예약하기
+                  </Button>
+                }
+
               </div>
             </div>
           </div>
@@ -161,7 +400,12 @@ export default function RegionDetail() {
 
           <Modal
             modalOpen={isModalOpen}
-            setModalOpen={setIsModalOpen}
+            setModalOpen={(isOpen) => {
+              setIsModalOpen(isOpen);
+              if (!isOpen) {
+                setSelectedDate(today);
+              }
+            }}
             contentMotion={contentMotion}
             parentClass={
               "fixed z-50 inset-0 bg-black bg-opacity-50 flex items-center justify-center"
@@ -169,19 +413,62 @@ export default function RegionDetail() {
             childClass={"relative bg-neutral-100 px-6 py-5 rounded-lg text-center"}
           >
             <div className="flex flex-col gap-3 text-sm">
-              <Calendar />
+              <Calendar onDateClick={handleDateClick} />
+              {selectedDate ?
+                <p>선택 날짜 : {selectedDate}</p> :
+                <p>날짜를 선택해주세요.</p>
+              }
               <SearchUserCount />
-              <div className="flex gap-3 w-72 overflow-x-scroll">
-                {reservationTime.map((time, index) => (
-                  <div key={index}>
-                    <Button className={tomatoBtn} style={'p-2 text-nowrap select-none'}>
-                      {/* 데스크탑 스크롤 오류 있을 수 있음 확인 */}
-                      {time}
-                    </Button>
-                  </div>
-                ))}
-              </div>
-              <p className="text-sm text-gray-500">오후 9시부터 예약은 가게 전화로 부탁드립니다.</p>
+              <DraggableScroller className="flex gap-3 overflow-x-scroll w-72 md:w-[500px] lg:w-[600px]">
+                {reservationsTime
+                  .filter((time) => {
+                    const openTime = restaurantDetails.time.split(' ~ ')[0];
+                    const timeToCheck = convertTime[time[0]];
+                    const currentTime = new Date().toTimeString().slice(0, 5);
+
+                    if (today === selectedDate) {
+                      return timeToCheck >= openTime && timeToCheck >= currentTime;
+                    }
+
+                    return timeToCheck >= openTime;
+                  })
+                  .map((time, index) => (
+                    <div key={index} className="flex text-nowrap">
+                      {myReservations[time[0]] ?
+                        <Button
+                          style={`disabled:opacity-40`}
+                          onClick={() => {
+                            if (confirm(`선택한 예약 시간은 "${convertTime[time[0]]}" 입니다. \n정말 취소하시겠습니까?`))
+                              cancelReservation(time[0]);
+                          }}
+                        >
+                          <div>
+                            <p>{convertTime[time[0]]}</p>
+                            취소
+                          </div>
+                        </Button> :
+
+                        <Button
+                          className={tomatoBtn}
+                          style={`disabled:opacity-40`}
+                          onClick={() => {
+                            if (confirm(`선택한 예약 시간은 "${convertTime[time[0]]}" 입니다. \n예약을 진행하시겠습니까?`))
+                              requestReservation(time[0]);
+                          }}
+                          disabled={time[1] >= Math.floor(restaurantDetails.totalSeats / 2)}
+                        >
+                          <div>
+                            <p>{convertTime[time[0]]}</p>
+                            <p>{time[1]} / {Math.floor(restaurantDetails.totalSeats / 2)}</p>
+                          </div>
+                        </Button>
+                      }
+
+                    </div>
+                  ))
+                }
+              </DraggableScroller>
+              <p className="text-sm text-gray-500">오후 9시부터 예약은 식당 전화로 부탁드립니다.</p>
             </div>
           </Modal>
         </>

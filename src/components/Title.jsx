@@ -12,7 +12,7 @@ import SearchCalendar from "./search/SearchCalendar";
 import SearchUserCount from "./search/SearchUserCount";
 import { useShowMobile } from "../hooks/useShowMobile";
 
-export default function Test() {
+export default function Title() {
   const dispatch = useDispatch();
   const { ref, inView } = useInView({
     // 동적 헤더

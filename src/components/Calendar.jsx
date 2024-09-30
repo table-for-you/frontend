@@ -9,6 +9,9 @@ export default function Calendar({ onDateClick }) {
   const koreaNow = new Date(new Date().getTime() + offset);
 
   const todayStr = koreaNow.toISOString().split("T")[0];
+  const oneWeekLater = new Date(koreaNow);
+  oneWeekLater.setDate(koreaNow.getDate() + 7);
+  const oneWeekLaterStr = oneWeekLater.toISOString().split('T')[0];
 
   const dayCellClassNames = ({ date }) => {
     const day = date.getDay(); // 요일을 숫자로 반환 (일요일: 0, 월요일: 1, ..., 토요일: 6)
@@ -31,6 +34,7 @@ export default function Calendar({ onDateClick }) {
       dayCellClassNames={dayCellClassNames}
       validRange={{
         start: todayStr,
+        end: oneWeekLaterStr
       }}
     /> //지역 순위 클릭
   );
