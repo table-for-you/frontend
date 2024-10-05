@@ -21,6 +21,10 @@ body {
   display: none;
 }
 
+.fc .fc-toolbar-title {
+  font-size: 1rem;
+}
+
 .fc .fc-toolbar.fc-header-toolbar {
   margin-top: 1em;
   margin-bottom: 1.5em;

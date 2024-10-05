@@ -53,17 +53,23 @@ export default function RegionDetail() {
   };
 
   const getMyWaiting = async () => {
-    const config = {
-      headers: {
-        Authorization: accessToken.token
+    if (accessToken) {
+      const config = {
+        headers: {
+          Authorization: accessToken.token
+        }
       }
-    }
-
-    try {
-      const res = await api.get(`/restaurants/${restaurantId}/queue-reservations-check`, config);
-      setMyWaiting(res.data.response);
-    } catch (err) {
-      console.error(err);
+      try {
+        const res = await api.get(`/restaurants/${restaurantId}/queue-reservations/me`, config);
+        setMyWaiting(res.data.response);
+      } catch (err) {
+        if (err.response.status === 404) {
+          setMyWaiting(0);
+          getWaiting();
+        } else {
+          console.error(err);
+        }
+      }
     }
   }
 
@@ -100,8 +106,8 @@ export default function RegionDetail() {
 
     fetchRegionDetailRestaurant();
     getMyMenu();
-    getWaiting();
     getMyWaiting();
+    getWaiting();
   }, [restaurantId]);
 
 
@@ -259,12 +265,33 @@ export default function RegionDetail() {
     try {
       const res = await api.delete(`/restaurants/${restaurantId}/queue-reservations`, config);
       alert(JSON.stringify(res.data.response));
-      getMyWaiting();
+      setMyWaiting(null);
       getWaiting();
     } catch (err) {
       console.error(err);
     }
   }
+
+  const delayWaiting = async () => {
+    const config = {
+      headers: {
+        Authorization: accessToken.token
+      }
+    }
+
+    const data = {
+      booking: restaurantWaiting
+    }
+
+    try {
+      const res = await api.patch(`/restaurants/${restaurantId}/queue-reservations/postponed-guest-booking`, data, config);
+      alert('성공적으로 대기 번호를 미뤘습니다.');
+      getMyWaiting();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
 
   useEffect(() => {
     if (isModalOpen && selectedDate) {
@@ -272,7 +299,6 @@ export default function RegionDetail() {
       getMyReservations();
     }
   }, [isModalOpen, selectedDate])
-
 
   return (
     <div className="px-5 pt-5 md:px-14 lg:px-28 xl:px-44 2xl:px-72">
@@ -325,46 +351,74 @@ export default function RegionDetail() {
                     주차 가능
                   </span>
                 )}
+                <div className="flex justify-end p-2">
+                  <div className="flex flex-col items-end">
+                    <span>현재 테이블 / 총 테이블</span>
+                    <span>{restaurantDetails.usedSeats} / {restaurantDetails.totalSeats}</span>
+                  </div>
+                </div>
                 {accessToken ?
-                  <div className="flex justify-end my-2 gap-2 text-sm">
+                  <div className="flex justify-end my-2 gap-2 text-xs sm:text-sm">
                     <Button
                       className={tomatoBtn}
                       onClick={handleReservationClick}
                     >
-                      예약하기 (날짜)
+                      예약하기
                     </Button>
-                    {myWaiting ?
-                      <Button
-                        onClick={() => {
-                          if (confirm('번호포 예약을 취소 하시겠습니까?')) {
-                            cancelWaiting();
-                          }
-                        }}
-                      >
-                        예약취소 (번호표)
-                        <p>나의 대기 번호 : {restaurantWaiting}</p>
-                      </Button> :
+                    {restaurantDetails.usedSeats >= restaurantDetails.totalSeats && (
+                      !myWaiting ?
+                        <div className="flex">
+                          <Button
+                            className={tomatoBtn}
+                            onClick={() => {
+                              if (confirm('대기 번호 발급을 진행 하시겠습니까?')) {
+                                requestWaiting();
+                              }
+                            }}
+                            style={`disabled:opacity-40`}
+                          >
+                            대기 번호 발급 <br />
+                            현재 대기 손님: {restaurantWaiting}
+                          </Button>
+                          <span
+                            className="material-symbols-outlined cursor-pointer"
+                            onClick={getWaiting}
+                          >
+                            refresh
+                          </span>
+                        </div>
+                        :
+                        <div className="flex gap-3">
+                          <Button
+                            onClick={() => {
+                              if (confirm('대기 번호 발급을 취소 하시겠습니까?')) {
+                                cancelWaiting();
+                              }
+                            }}
+                          >
+                            대기 취소
+                            <p>나의 대기 번호 : {myWaiting}</p>
+                          </Button>
+                          {myWaiting !== restaurantWaiting && (
+                            <Button
+                              onClick={() => {
+                                if (confirm('대기 번호를 뒤로 미루겠습니까?')) {
+                                  delayWaiting();
+                                }
+                              }}
+                            >
+                              미루기
+                            </Button>
+                          )}
 
-                      <Button
-                        className={tomatoBtn}
-                        onClick={() => {
-                          if (confirm('번호포 예약을 진행 하시겠습니까?')) {
-                            requestWaiting();
-                          }
-                        }}
-                        style={`disabled:opacity-40`}
-                        disabled={restaurantWaiting >= Math.floor(restaurantDetails.totalSeats / 2)}
-                      >
-                        예약하기 (번호표)
-                        <p>{restaurantWaiting} / {Math.floor(restaurantDetails.totalSeats / 2)}</p>
-                      </Button>
-                    }
-                    <span
-                      className="material-symbols-outlined cursor-pointer"
-                      onClick={getWaiting}
-                    >
-                      refresh
-                    </span>
+                          <span
+                            className="material-symbols-outlined cursor-pointer"
+                            onClick={getMyWaiting}
+                          >
+                            refresh
+                          </span>
+                        </div>
+                    )}
                   </div>
 
                   :
@@ -376,7 +430,10 @@ export default function RegionDetail() {
                     로그인 후 예약하기
                   </Button>
                 }
-
+                <p
+                  className="text-sm text-gray-400 float-end mb-2">
+                  테이블은 예약 우선순으로 진행 됩니다.
+                </p>
               </div>
             </div>
           </div>
@@ -389,7 +446,7 @@ export default function RegionDetail() {
                   <img src={menu.menuImage} className="rounded-lg object-cover h-60 w-full sm:h-44" />
                 </div>
                 <div className="flex flex-col justify-between">
-                  <div className="text-lg flex flex-col justify-between h-full sm:items-end">
+                  <div className="text-lg flex flex-col h-full justify-between sm:items-end">
                     <p >{menu.name}</p>
                     <p>{menu.price}원</p>
                   </div>
@@ -415,7 +472,15 @@ export default function RegionDetail() {
             <div className="flex flex-col gap-3 text-sm">
               <Calendar onDateClick={handleDateClick} />
               {selectedDate ?
-                <p>선택 날짜 : {selectedDate}</p> :
+                <div className="flex justify-center gap-1 items-center">
+                  선택 날짜 : {selectedDate}
+                  <span
+                    className="material-symbols-outlined cursor-pointer"
+                    onClick={getTimeSlotReservations}
+                  >
+                    refresh
+                  </span>
+                </div> :
                 <p>날짜를 선택해주세요.</p>
               }
               <SearchUserCount />
@@ -463,7 +528,6 @@ export default function RegionDetail() {
                           </div>
                         </Button>
                       }
-
                     </div>
                   ))
                 }

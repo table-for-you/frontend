@@ -99,6 +99,14 @@ export default function Header() {
                   <div className="mt- cursor-pointer border-b p-2 text-sm hover:bg-gray-100">
                     <p>로그아웃</p>
                   </div>
+                  <div
+                    className="mt- cursor-pointer border-b p-2 text-sm hover:bg-gray-100"
+                    onClick={() => {
+                      navigate("/notifications"), setMenuBar(false);
+                    }}
+                  >
+                    <p>알림함</p>
+                  </div>
                   {token.role === "OWNER" && (
                     <>
                       <div
@@ -117,14 +125,6 @@ export default function Header() {
                         }}
                       >
                         <p>나의 가게</p>
-                      </div>
-                      <div
-                        className="mt- cursor-pointer border-b p-2 text-sm hover:bg-gray-100"
-                        onClick={() => {
-                          navigate("/owner/notifications"), setMenuBar(false);
-                        }}
-                      >
-                        <p>알림함</p>
                       </div>
                     </>
                   )}
@@ -186,6 +186,15 @@ export default function Header() {
                     >
                       로그아웃
                     </Button>
+                    <Button
+                      onClick={() => {
+                        navigate("/notifications"),
+                          setIsModalOpen(false);
+                      }}
+                      style={`${tomatoBtn} w-full`}
+                    >
+                      알림함
+                    </Button>
 
                     {token.role === "OWNER" && (
                       <>
@@ -207,15 +216,6 @@ export default function Header() {
                           style={`${tomatoBtn} w-full`}
                         >
                           나의 가게
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            navigate("/owner/notifications"),
-                              setIsModalOpen(false);
-                          }}
-                          style={`${tomatoBtn} w-full`}
-                        >
-                          알림함
                         </Button>
                       </>
                     )}

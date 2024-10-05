@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { decodeToken } from "../../utils/decodeToken";
-import { api } from "../../services/api";
-import Loading from "../../components/Loading";
-import Button from "../../components/Button";
-import { tomatoBtn } from "../../constants/style";
+import { api } from "../services/api";
+import Loading from "../components/Loading";
+import Button from "../components/Button";
+import { tomatoBtn } from "../constants/style";
 
 export default function Notifications() {
     const { accessToken } = useSelector((state) => state.authToken);
@@ -16,22 +15,20 @@ export default function Notifications() {
     useEffect(() => {
         const fetchMyNotifications = async () => {
             if (accessToken) {
-                const decoded = decodeToken(JSON.stringify(accessToken));
-                if (decoded.role === "OWNER") {
-                    const config = {
-                        headers: {
-                            Authorization: `${accessToken.token}`,
-                        },
-                    };
 
-                    try {
-                        const res = await api.get("/users/notifications", config);
-                        setNotifications(res.data.content);
-                    } catch (err) {
-                        console.error(err);
-                    } finally {
-                        setIsLoading(false);
-                    }
+                const config = {
+                    headers: {
+                        Authorization: `${accessToken.token}`,
+                    },
+                };
+
+                try {
+                    const res = await api.get("/users/notifications", config);
+                    setNotifications(res.data.content);
+                } catch (err) {
+                    console.error(err);
+                } finally {
+                    setIsLoading(false);
                 }
             } else {
                 alert("권한이 없습니다.");
@@ -45,7 +42,7 @@ export default function Notifications() {
     const unreadNotifications = notifications.filter((notification) => !notification.read);
 
     const handleViewDetails = (notificationId) => {
-        navigate(`/owner/notifications/detail/${notificationId}`);
+        navigate(`/notifications/detail/${notificationId}`);
     };
 
     return (
@@ -53,12 +50,12 @@ export default function Notifications() {
             {isLoading ?
                 <Loading /> :
                 <div className="flex flex-col gap-5">
-                    <div>
-                        <p className="text-lg mb-5">안 읽은 알림</p>
+                    <p className="text-lg">안 읽은 알림</p>
+                    <div className="h-[50vh] overflow-y-auto">
                         {unreadNotifications.filter((notification) => notification.status !== 'PENDING').map((notification) => (
                             <div
                                 key={notification.id}
-                                className="flex justify-between rounded-lg bg-neutral-100 p-5 shadow-lg mb-2 items-center"
+                                className="flex flex-col sm:flex-row justify-between rounded-lg bg-neutral-100 p-5 shadow-lg mb-2 sm:items-center gap-3"
                             >
                                 <div>
                                     <p>{notification.content}</p>
@@ -66,7 +63,7 @@ export default function Notifications() {
                                 </div>
                                 <Button
                                     className={tomatoBtn}
-                                    style={"p-3 text-sm"}
+                                    style={"text-sm"}
                                     onClick={() => handleViewDetails(notification.id)}
                                 >
                                     자세히 보기
@@ -74,12 +71,12 @@ export default function Notifications() {
                             </div>
                         ))}
                     </div>
-                    <div>
-                        <p className="text-lg mb-5">읽은 알림</p>
+                    <p className="text-lg">읽은 알림</p>
+                    <div className="h-[50vh] overflow-y-auto">
                         {readNotifications.filter((notification) => notification.status !== 'PENDING').map((notification) => (
                             <div
                                 key={notification.id}
-                                className="flex justify-between rounded-lg bg-neutral-100 p-5 shadow-lg mb-2 items-center"
+                                className="flex flex-col sm:flex-row justify-between rounded-lg bg-neutral-100 p-5 shadow-lg mb-2 sm:items-center gap-3"
                             >
                                 <div>
                                     <p>{notification.content}</p>
@@ -87,7 +84,7 @@ export default function Notifications() {
                                 </div>
                                 <Button
                                     className={tomatoBtn}
-                                    style={"p-3 text-sm"}
+                                    style={"text-sm"}
                                     onClick={() => handleViewDetails(notification.id)}
                                 >
                                     자세히 보기
@@ -95,10 +92,7 @@ export default function Notifications() {
                             </div>
                         ))}
                     </div>
-
-
                 </div>
-
             }
         </div>
     )

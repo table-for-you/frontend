@@ -11,12 +11,13 @@ import MyRestaurant from "./pages/owner/MyRestaurant";
 import RestaurantDetails from "./pages/admin/RestaurantDetails";
 import RegionDetail from "./pages/RegionDetail";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Notifications from "./pages/owner/Notifications";
-import DetailNotifications from "./pages/owner/DetailNotifications";
+import Notifications from "./pages/Notifications";
+import DetailNotifications from "./pages/DetailNotifications";
 import RejectRestaurant from "./pages/owner/RejectRestaurant";
 import UpdateRestaurant from "./pages/owner/UpdateRestaurant";
 import MenuManage from "./pages/owner/MenuManage";
 import MenuUpdate from "./pages/owner/MenuUpdate";
+import ReservationsManage from "./pages/owner/ReservationsManage";
 
 function App() {
   return (
@@ -56,11 +57,11 @@ function App() {
           >
           </Route>
           <Route
-            path="/owner/notifications"
+            path="/notifications"
             element={<Notifications />}
           ></Route>
           <Route
-            path="/owner/notifications/detail/:notificationId"
+            path="/notifications/detail/:notificationId"
             element={<DetailNotifications />}
           ></Route>
           <Route
@@ -70,6 +71,11 @@ function App() {
           <Route
             path="/owner/menu-manage/:restaurantId/update/:menuId"
             element={<MenuUpdate />
+            }
+          ></Route>
+          <Route
+            path="/owner/reservations-manage/:restaurantId/"
+            element={<ReservationsManage />
             }
           ></Route>
 

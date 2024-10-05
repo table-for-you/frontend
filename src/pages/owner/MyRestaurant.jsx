@@ -83,6 +83,13 @@ export default function MyRestaurant() {
                 >
                   메뉴 관리
                 </Button>
+                <Button
+                  className={tomatoBtn}
+                  style={'p-2'}
+                  onClick={() => navigate(`/owner/reservations-manage/${restaurant.id}`)}
+                >
+                  예약 관리
+                </Button>
                 <Button onClick={() => deleteRestaurant(restaurant.id)}>
                   가게 삭제
                 </Button>

@@ -3,6 +3,7 @@ import dayGridPlugin from "@fullcalendar/daygrid"; // dayGrid 뷰 플러그인
 import timeGridPlugin from "@fullcalendar/timegrid"; // timeGrid 뷰 플러그인
 import interactionPlugin from "@fullcalendar/interaction"; // 이벤트 드래그 & 드롭 등을 위한 플러그인
 import koLocale from "@fullcalendar/core/locales/ko";
+import bootstrapPlugin from '@fullcalendar/bootstrap';
 
 export default function Calendar({ onDateClick }) {
   const offset = 1000 * 60 * 60 * 9;
@@ -24,8 +25,8 @@ export default function Calendar({ onDateClick }) {
   };
   return (
     <FullCalendar
-      plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]} // 사용할 플러그인 배열
-      initialView="dayGridMonth" // 초기 뷰 설정
+      plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, bootstrapPlugin]} // 사용할 플러그인 배열
+      initialView="dayGridWeek" // 초기 뷰 설정
       editable={true} // 이벤트 드래그 & 드롭 가능 여부
       selectable={true} // 날짜 선택 가능 여부
       locale={koLocale}
@@ -36,6 +37,8 @@ export default function Calendar({ onDateClick }) {
         start: todayStr,
         end: oneWeekLaterStr
       }}
+      contentHeight={120}
+      titleFormat={{ year: "numeric", month: "long" }}
     /> //지역 순위 클릭
   );
 }
