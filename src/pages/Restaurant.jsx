@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Filter from "../components/Filter";
 import SelectList from "../components/SelectList";
 import { api } from "../services/api";
@@ -9,23 +9,57 @@ import Rating from "../components/Rating";
 export default function Region() {
   const [restaurantList, setRestaurantList] = useState([]);
   const { name } = useParams();
+  const { state } = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [myMenu, setMyMenu] = useState([]);
 
+  const regionMap = {
+    "서울": "SEOUL",
+    "제주도": "JEJU",
+    "충남": "CHUNGNAM",
+    "인천": "INCHEON",
+    "대구": "DAEGU",
+    "대전": "DAEJEON",
+    "경기": "GYEONGGI",
+    "경남": "GYEONGNAM",
+    "부산": "BUSAN",
+    "전북": "JEONBUK",
+    "울산": "ULSAN",
+    "광주": "GWANGJU",
+    "강원": "GANGWON",
+    "경북": "GYEONGBUK",
+    "전남": "JEONNAM",
+    "충북": "CHUNGBUK",
+    "세종": "SEJONG",
+  };
 
   const foodTypeMap = {
-    'KOREAN': '한식',
-    'CHINESE': '중식',
-    'JAPANESE': '일식',
-    'WESTERN': '양식'
-  }
+    '한식': 'KOREAN',
+    '중식': 'CHINESE',
+    '일식': 'JAPANESE',
+    '양식': 'WESTERN'
+  };
+
+
+
 
   useEffect(() => {
     const fetchRestaurantList = async () => {
       try {
+
+        let searchName = name;
+
+        if (state?.searchType === "region" && regionMap[searchName]) {
+          searchName = regionMap[searchName];
+        }
+
+        if (state?.searchType === "food" && foodTypeMap[searchName]) {
+          searchName = foodTypeMap[searchName];
+        }
+
         const params = {
-          type: "location",
-          "search-keyword": name,
+          type: state?.searchType || "location",
+          "search-keyword": searchName,
         };
         const res = await api.get("/public/restaurants", { params });
         setRestaurantList(res.data.content);
@@ -40,7 +74,7 @@ export default function Region() {
   const navigate = useNavigate();
 
   const handleShowRestaurantDetail = (restaurantId) => {
-    navigate(`/region/${name}/restaurant/${restaurantId}`);
+    navigate(`/restaurant/${name}/details/${restaurantId}`);
   };
 
 

@@ -8,9 +8,11 @@ import Modal from "./Modal";
 import Button from "./Button";
 
 import SearchRestaurant from "./search/SearchRestaurant";
-import SearchCalendar from "./search/SearchCalendar";
+import SearchType from "./search/SearchType";
 import SearchUserCount from "./search/SearchUserCount";
 import { useShowMobile } from "../hooks/useShowMobile";
+import { useNavigate } from "react-router-dom";
+
 
 export default function Title() {
   const dispatch = useDispatch();
@@ -19,6 +21,9 @@ export default function Title() {
     threshold: 0.05,
   });
   const { showMobile, isModalOpen, setIsModalOpen } = useShowMobile();
+  const [searchType, setSearchType] = useState("region");
+  const [searchInputValue, setSearchInputValue] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(setInview(inView));
@@ -48,6 +53,14 @@ export default function Title() {
       duration: 0.5,
     },
   };
+  // 지역 convert 하는 거 해야함
+  const handleTypeChange = (e) => {
+    setSearchType(e.target.value);
+  }
+
+  const search = (type, searchInputValue) => {
+    navigate(`/restaurant/${searchInputValue}/`, { state: { searchType: type } })
+  }
 
   return (
     <div className="relative h-[100vh]">
@@ -79,15 +92,23 @@ export default function Title() {
           <div className="flex flex-col gap-2 rounded-lg bg-white px-10 py-4 text-black shadow-2xl">
             <p className="font-semibold">빠르게 식당 검색</p>
             <div className="flex justify-center gap-3">
-              <SearchRestaurant />
-              <SearchCalendar />
+              <SearchRestaurant
+                searchInputValue={searchInputValue}
+                setSearchInputValue={setSearchInputValue}
+              />
+              {/* <SearchCalendar /> */}
+              <SearchType handleTypeChange={(e) => handleTypeChange(e)} />
               <SearchUserCount />
-              <Button style={`w-20 text-sm`}>검색</Button>
+              <Button
+                style={`w-20 text-sm`}
+                onClick={() => search(searchType, searchInputValue)}
+              >
+                검색
+              </Button>
             </div>
           </div>
         )}
       </div>
-
       <div className="absolute bottom-32 left-1/2 w-full -translate-x-1/2 -translate-y-1/2 transform text-center text-lg text-white xl:text-xl">
         <p>소중한 순간을 예약하세요.</p>
         <p>기억에 남을 장소가 여러분을 기다립니다.</p>
@@ -119,17 +140,24 @@ export default function Title() {
         <div className="flex flex-col gap-5 p-5">
           <div className="mt-4 flex flex-col gap-2 rounded-lg bg-white p-8 shadow-lg">
             <p className="text-xl font-bold">어디로 예약할까요?</p>
-            <SearchRestaurant />
+            <SearchRestaurant
+              searchInputValue={searchInputValue}
+              setSearchInputValue={setSearchInputValue}
+            />
           </div>
 
           <div className="mt-4 rounded-lg bg-white p-8 shadow-lg">
-            <SearchCalendar />
+            {/* <SearchCalendar /> */}
+            <SearchType handleTypeChange={(e) => handleTypeChange(e)} />
           </div>
 
           <div className="mt-4 rounded-lg bg-white p-8 shadow-lg">
             <SearchUserCount />
           </div>
-          <Button style={`${tomatoBtn}`}>검색</Button>
+          <Button
+            style={`${tomatoBtn}`}
+            onClick={() => search(searchType, searchInputValue)}
+          >검색</Button>
         </div>
       </Modal>
     </div>

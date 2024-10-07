@@ -7,7 +7,7 @@ import CommonSlider from "../commonSlider";
 export default function PopularRegion() {
   const navigate = useNavigate();
   const handleRegionClick = (name) => {
-    navigate(`/region/${name}`);
+    navigate(`/restaurant/${name}`);
   };
 
   const regionItems = [

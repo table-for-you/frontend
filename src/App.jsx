@@ -2,14 +2,14 @@ import Header from "./components/Header";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
-import Region from "./pages/Region";
+import Restaurant from "./pages/Restaurant";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
 import RestaurantManage from "./pages/admin/RestaurantManage";
 import RestaurantRegister from "./pages/owner/RestaurantRegister";
 import MyRestaurant from "./pages/owner/MyRestaurant";
 import RestaurantDetails from "./pages/admin/RestaurantDetails";
-import RegionDetail from "./pages/RegionDetail";
+import RestaurantDetail from "./pages/RestaurantDetail";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Notifications from "./pages/Notifications";
 import DetailNotifications from "./pages/DetailNotifications";
@@ -30,10 +30,10 @@ function App() {
           <Route path="/" element={<Login />}></Route>
           <Route path="/register" element={<Register />}></Route>
           <Route path="/reset-password" element={<ResetPassword />}></Route>
-          <Route path="/region/:name" element={<Region />}></Route>
+          <Route path="/restaurant/:name" element={<Restaurant />}></Route>
           <Route
-            path="/region/:name/restaurant/:restaurantId"
-            element={<RegionDetail />}
+            path="/restaurant/:name/details/:restaurantId"
+            element={<RestaurantDetail />}
           />
           <Route path="*" element={<NotFound />}></Route>
 

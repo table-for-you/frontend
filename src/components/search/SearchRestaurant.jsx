@@ -2,17 +2,16 @@ import { useState } from "react";
 import { inputStyle } from "../../constants/style";
 import SearchRank from "./SearchRank";
 
-export default function SearchRestaurant() {
-  const [rankInputValue, setRankInputValue] = useState("");
+export default function SearchRestaurant({ searchInputValue, setSearchInputValue }) {
   const [showRank, setShowRank] = useState(false);
 
   const handleSelectRegion = (region) => {
-    setRankInputValue(region);
+    setSearchInputValue(region);
     setShowRank(false);
   };
 
   const handleRegionChange = (e) => {
-    setRankInputValue(e.target.value);
+    setSearchInputValue(e.target.value);
   };
 
   return (
@@ -24,7 +23,7 @@ export default function SearchRestaurant() {
         type="text"
         className={`${inputStyle} w-full cursor-pointer pl-8 text-[1rem] active:bg-white`}
         placeholder="원하시는 식당을 검색해 주세요."
-        value={rankInputValue}
+        value={searchInputValue}
         onClick={() => setShowRank(!showRank)}
         onChange={handleRegionChange}
       />

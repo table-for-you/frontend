@@ -65,7 +65,7 @@ export default function RegionDetail() {
       } catch (err) {
         if (err.response.status === 404) {
           setMyWaiting(0);
-          getWaiting();
+          getRestaurantWaiting();
         } else {
           console.error(err);
         }
@@ -73,7 +73,7 @@ export default function RegionDetail() {
     }
   }
 
-  const getWaiting = async () => {
+  const getRestaurantWaiting = async () => {
     try {
       const res = await api.get(`/public/restaurants/${restaurantId}/waiting`);
       setRestaurantwaiting(res.data.response);
@@ -107,7 +107,7 @@ export default function RegionDetail() {
     fetchRegionDetailRestaurant();
     getMyMenu();
     getMyWaiting();
-    getWaiting();
+    getRestaurantWaiting();
   }, [restaurantId]);
 
 
@@ -249,7 +249,7 @@ export default function RegionDetail() {
       const res = await api.post(`/restaurants/${restaurantId}/queue-reservations`, null, config);
       alert(JSON.stringify(res.data.response));
       getMyWaiting();
-      getWaiting();
+      getRestaurantWaiting();
     } catch (err) {
       console.error(err);
     }
@@ -266,7 +266,7 @@ export default function RegionDetail() {
       const res = await api.delete(`/restaurants/${restaurantId}/queue-reservations`, config);
       alert(JSON.stringify(res.data.response));
       setMyWaiting(null);
-      getWaiting();
+      getRestaurantWaiting();
     } catch (err) {
       console.error(err);
     }
@@ -382,7 +382,7 @@ export default function RegionDetail() {
                           </Button>
                           <span
                             className="material-symbols-outlined cursor-pointer"
-                            onClick={getWaiting}
+                            onClick={getRestaurantWaiting}
                           >
                             refresh
                           </span>
@@ -422,16 +422,17 @@ export default function RegionDetail() {
                   </div>
 
                   :
-                  <Button
-                    className={tomatoBtn}
-                    style={`float-right text-sm mt-6 mb-2`}
-                    onClick={() => navigate('/login')}
-                  >
-                    로그인 후 예약하기
-                  </Button>
+                  <div className="flex flex-col justify-end">
+                    <Button
+                      className={tomatoBtn}
+                      onClick={() => navigate('/login')}
+                    >
+                      로그인 후 예약하기
+                    </Button>
+                  </div>
                 }
                 <p
-                  className="text-sm text-gray-400 float-end mb-2">
+                  className="text-sm text-gray-400 float-right mb-2">
                   테이블은 예약 우선순으로 진행 됩니다.
                 </p>
               </div>
