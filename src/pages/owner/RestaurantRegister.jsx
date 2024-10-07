@@ -86,7 +86,7 @@ export default function RestaurantRegister() {
 
       geoCoder.addressSearch(address, (result, status) => {
         if (status === kakao.maps.services.Status.OK) {
-          const coords = new kakao.maps.LatLng(result[0].x, result[0].y);
+          const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
           resolve(coords);
         } else {
           reject(status);
@@ -150,14 +150,14 @@ export default function RestaurantRegister() {
 
     if (mainImage[0]) {
       formData.append("mainImage", mainImage[0].file);
-    } 
+    }
 
 
     // 서브 이미지 추가
     images.forEach((image, index) => {
       if (image) {
         formData.append("subImages", image.file); // subImages 배열에 이미지 추가
-      } 
+      }
     });
     formData.append('dto', new Blob([JSON.stringify(data)], { type: 'application/json' }));
     const config = {

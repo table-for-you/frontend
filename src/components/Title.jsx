@@ -53,7 +53,7 @@ export default function Title() {
       duration: 0.5,
     },
   };
-  // 지역 convert 하는 거 해야함
+
   const handleTypeChange = (e) => {
     setSearchType(e.target.value);
   }

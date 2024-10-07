@@ -107,8 +107,6 @@ export default function UpdateRestaurant() {
                         setIsParking(res.data.parking)
                         setValue('description', res.data.description);
 
-
-
                     } catch (err) {
                         console.error(err);
                     } finally {
@@ -141,7 +139,7 @@ export default function UpdateRestaurant() {
 
             geoCoder.addressSearch(address, (result, status) => {
                 if (status === kakao.maps.services.Status.OK) {
-                    const coords = new kakao.maps.LatLng(result[0].x, result[0].y);
+                    const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
                     resolve(coords);
                 } else {
                     reject(status);
@@ -175,10 +173,12 @@ export default function UpdateRestaurant() {
             setLatitude(coords.getLat());
             setLongitude(coords.getLng());
         } catch (err) {
+            console.error("좌표 변환 실패: ", err);
             console.error(err);
         }
 
         setAddress(fullAddress);
+
         setIsPostcodeOpen(false);
     };
 

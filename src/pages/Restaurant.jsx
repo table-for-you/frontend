@@ -40,9 +40,6 @@ export default function Region() {
     '양식': 'WESTERN'
   };
 
-
-
-
   useEffect(() => {
     const fetchRestaurantList = async () => {
       try {
