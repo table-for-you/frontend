@@ -73,6 +73,8 @@ export default function Header() {
     }
   }, [navigate, accessToken, notificationSize])
 
+  console.log(notificationSize);
+
   // const logout = () => {
   //   try {
   //     const res = api.get('/api/logout', {
@@ -149,6 +151,15 @@ export default function Header() {
                     }}
                   >
                     <p>마이 페이지</p>
+                  </div>
+                  <div
+                    className="mt- cursor-pointer border-b p-2 text-sm hover:bg-gray-100"
+                    onClick={() => {
+                      navigate("/visited-restaurants"),
+                        setMenuBar(false);
+                    }}
+                  >
+                    <p>방문한 식당</p>
                   </div>
                   {token.role === "OWNER" && (
                     <>
@@ -261,6 +272,15 @@ export default function Header() {
                       style={`${tomatoBtn} w-full`}
                     >
                       마이 페이지
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        navigate("/visited-restaurants"),
+                          setIsModalOpen(false);
+                      }}
+                      style={`${tomatoBtn} w-full`}
+                    >
+                      방문한 식당
                     </Button>
                     {token.role === "OWNER" && (
                       <>

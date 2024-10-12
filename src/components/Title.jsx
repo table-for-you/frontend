@@ -21,7 +21,7 @@ export default function Title() {
     threshold: 0.05,
   });
   const { showMobile, isModalOpen, setIsModalOpen } = useShowMobile();
-  const [searchType, setSearchType] = useState("region");
+  const [searchType, setSearchType] = useState("location");
   const [searchInputValue, setSearchInputValue] = useState("");
   const navigate = useNavigate();
 

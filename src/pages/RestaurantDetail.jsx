@@ -88,7 +88,6 @@ export default function RegionDetail() {
       try {
         const res = await api.get(`/public/restaurants/${restaurantId}`);
         setRestaurantDetails(res.data);
-        console.log(res.data);
       } catch (err) {
         console.error(err);
       } finally {

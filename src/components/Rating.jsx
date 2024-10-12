@@ -4,7 +4,7 @@ export default function Rating({ rating, ratingNum }) {
             <span>⭐</span>
             <span>{rating}</span>
             <span className="opacity-50">
-                {ratingNum} 평가
+                {ratingNum} 평점
             </span>
         </div>
     )

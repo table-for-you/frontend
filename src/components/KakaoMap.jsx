@@ -16,7 +16,7 @@ export default function KakaoMap({ size }) {
   const [modalRestaurantInfo, setModalRestaurantInfo] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [searchInputValue, setSearchInputValue] = useState('');
-  const [searchSelected, setSearchSelected] = useState('region');
+  const [searchSelected, setSearchSelected] = useState('location');
   const [markers, setMarkers] = useState([]); // 마커 리스트 저장
 
   const navigate = useNavigate();
@@ -250,9 +250,9 @@ export default function KakaoMap({ size }) {
             onChange={handleSelectChange}
             className="border border-gray-300 rounded-md px-1 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
+            <option value="location">주소</option>
             <option value="region">지역</option>
             <option value="restaurant">식당명</option>
-            <option value="location">주소</option>
             <option value="food">종류</option>
           </select>
           <span

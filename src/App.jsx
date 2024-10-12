@@ -22,6 +22,7 @@ import UserManage from "./pages/admin/UserManage";
 import Footer from "./components/Footer";
 import UserDetails from "./pages/admin/UserDetails";
 import MyPage from "./pages/MyPage";
+import VisitedRestaurant from "./pages/VisitedRestaurant";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
             <Route path="/reset-idpw" element={<ResetIdPw />}></Route>
             <Route path="/restaurant/:name" element={<Restaurant />}></Route>
             <Route path="/mypage" element={<MyPage />}></Route>
+            <Route path="/visited-restaurants" element={<VisitedRestaurant/>}></Route>
             <Route
               path="/restaurant/:name/details/:restaurantId"
               element={<RestaurantDetail />}
