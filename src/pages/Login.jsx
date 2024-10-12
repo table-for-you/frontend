@@ -113,7 +113,7 @@ export default function Login() {
 
           <div className="flex justify-end">
             <small className="cursor-pointer border-b border-transparent hover:border-black">
-              <Link to="/reset-password">비밀번호 재설정</Link>
+              <Link to="/reset-idpw">ID/PW 재설정</Link>
             </small>
           </div>
           <p className="m-auto text-sm text-zinc-500">계정이 없으신가요?</p>

@@ -24,7 +24,7 @@ export default function Notifications() {
 
                 try {
                     const res = await api.get("/users/notifications", config);
-                    setNotifications(res.data.content);
+                    setNotifications(res.data);
                 } catch (err) {
                     console.error(err);
                 } finally {

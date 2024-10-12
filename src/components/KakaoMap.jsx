@@ -140,7 +140,6 @@ export default function KakaoMap({ size }) {
       const res = await api.get('/public/restaurants', { params });
       setRestaurantList(res.data.content);
       createMarkers(res.data.content);
-      console.log(res.data.content);
     } catch (err) {
       console.error(err);
     }
@@ -234,17 +233,30 @@ export default function KakaoMap({ size }) {
       >
         add
       </span>
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 -translate-y-2 z-50 opacity-65">
-        <div className="flex">
-          <input type="text" value={searchInputValue} onChange={handleInputChange} />
-          <select onChange={handleSelectChange}>
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 -translate-y-2 z-50 opacity-80">
+        <div className="flex items-center space-x-2 p-3 bg-white shadow-md rounded-lg text-sm">
+          <input
+            type="text"
+            value={searchInputValue}
+            onChange={handleInputChange}
+            className="border border-gray-300 rounded-md px-1 py-1  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                getSearchRestaurant(searchInputValue, searchSelected);
+              }
+            }}
+          />
+          <select
+            onChange={handleSelectChange}
+            className="border border-gray-300 rounded-md px-1 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
             <option value="region">지역</option>
             <option value="restaurant">식당명</option>
             <option value="location">주소</option>
             <option value="food">종류</option>
           </select>
           <span
-            className="material-symbols-outlined bg-white cursor-pointer p-1"
+            className="material-symbols-outlined bg-blue-500 text-white cursor-pointer p-0.5 rounded-md hover:bg-blue-600 transition duration-200"
             onClick={() => getSearchRestaurant(searchInputValue, searchSelected)}
           >
             search

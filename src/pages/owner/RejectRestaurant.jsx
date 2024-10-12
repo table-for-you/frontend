@@ -41,22 +41,22 @@ export default function RejectRestaurant() {
 
     const deleteRestaurant = async (restaurantId) => {
         const config = {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `${accessToken.token}`,
-          },
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `${accessToken.token}`,
+            },
         };
-    
+
         try {
-          const res = await api.delete(`/owner/restaurants/${restaurantId}`, config);
-          alert(JSON.stringify(res.data.response));
-          setRejectRestaurant((prevRestaurants) => (
-            prevRestaurants.filter((restaurant) => restaurant.id !== restaurantId)
-          ))
+            const res = await api.delete(`/owner/restaurants/${restaurantId}`, config);
+            alert(JSON.stringify(res.data.response));
+            setRejectRestaurant((prevRestaurants) => (
+                prevRestaurants.filter((restaurant) => restaurant.id !== restaurantId)
+            ))
         } catch (err) {
-          console.error(err);
+            console.error(err);
         }
-      }
+    }
 
     return (
         <div className="px-5 pt-5 md:px-14 lg:px-28 xl:px-44 2xl:px-72">
@@ -77,7 +77,12 @@ export default function RejectRestaurant() {
                                 >
                                     가게 업데이트
                                 </Button>
-                                <Button onClick={() => deleteRestaurant(restaurant.id)}>
+                                <Button onClick={() => {
+                                    if (confirm('정말로 가게를 삭제하시겠습니까?')) {
+                                        deleteRestaurant(restaurant.id)
+                                    }
+                                }
+                                }>
                                     가게 삭제
                                 </Button>
                             </div>

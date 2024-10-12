@@ -6,7 +6,7 @@ import { api } from "../services/api";
 import Modal from "../components/Modal";
 import { useNavigate } from "react-router-dom";
 
-export default function ResetPassword() {
+export default function ResetIdPw() {
   const {
     register,
     watch,
@@ -14,7 +14,11 @@ export default function ResetPassword() {
     formState: { isSubmitting, isSubmitted, errors },
   } = useForm({ mode: "onChange" });
   const [errorMessage, setErrorMessage] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isIdModalOpen, setIsIdModalOpen] = useState(false);
+  const [isPwModalOpen, setIsPwModalOpen] = useState(false);
+  const [notFoundId, setNotFoundId] = useState('');
+  const [yourId, setYourId] = useState(null);
+
 
   const contentMotion = {
     initial: { opacity: 0, y: -200 },
@@ -30,6 +34,25 @@ export default function ResetPassword() {
 
   const navigate = useNavigate();
 
+  const findId = async () => {
+    const params = {
+      email: watch('findIdEmail')
+    }
+
+    const config = {
+      params: params
+    }
+
+    try {
+      const res = await api.get(`/api/find-id`, config);
+      setYourId(res.data.response);
+      setIsIdModalOpen(true);
+      setNotFoundId("");
+    } catch (err) {
+      setNotFoundId(err.response.data.message);
+    }
+  }
+
   const findPass = async () => {
     const email = watch("email");
     const username = watch("id");
@@ -38,7 +61,7 @@ export default function ResetPassword() {
       const res = await api.post(
         `/api/find-pass?email=${encodeURIComponent(email)}&username=${username}`,
       );
-      setIsModalOpen(true);
+      setIsPwModalOpen(true);
       setErrorMessage("");
     } catch (err) {
       setErrorMessage(err.response.data.message);
@@ -47,18 +70,65 @@ export default function ResetPassword() {
 
   return (
     <>
-      <div className="grid h-[calc(100vh-20rem)] place-items-center">
+      <div className="grid h-[calc(100vh-10rem)] place-items-center">
         <form
           onSubmit={(e) => e.preventDefault()}
-          className="sm:w-1/2 lg:w-1/3 xl:w-1/4"
+          // className="sm:w-1/2 lg:w-1/3 xl:w-1/4"
+          className="flex flex-col sm:flex-row gap-10"
         >
-          <div className="mb-4">
-            <p className="text-2xl">비밀번호 재설정</p>
+          <div>
+            <p className="text-lg font-bold">아이디 찾기</p>
+            <p className="text-sm text-gray-400 mb-2">
+              회원가입 시 등록한 이메일 주소를 입력해 주세요.
+            </p>
+            <div className="flex flex-col">
+              <label htmlFor="findIdEmail" className="text-xs">
+                이메일
+              </label>
+              <input
+                type="email"
+                id="findIdEmail"
+                className={`${watch("findIdEmail") ? (errors.findIdEmail ? redLine : greenLine) : undefined} ${inputStyle} mb-2`}
+                placeholder="tableforyou@table.com"
+                {...register("findIdEmail", {
+                  required: "이메일은 필수 입력입니다.",
+                  pattern: {
+                    value: /\S+@\S+\.\S+/,
+                    message: "이메일 형식에 맞지 않습니다.",
+                  },
+                })}
+              />
+              {errors.findIdEmail && (
+                <small className="mb-2 text-red-500">
+                  {errors.findIdEmail.message}
+                </small>
+              )}
+              <Button
+                className={`${tomatoBtn}`}
+                style={"w-full mt-2 disabled:opacity-50"}
+                disabled={
+                  isSubmitting ||
+                  errors.findIdEmail ||
+                  watch("findIdEmail") === "" ||
+                  !getValues("findIdEmail")
+                }
+                onClick={findId}
+              >
+                확인
+              </Button>
+            </div>
+            {notFoundId !== "" && (
+              <small className="mt-2 flex justify-center text-red-500">
+                {notFoundId}
+              </small>
+            )}
+          </div>
+
+          <div className="flex flex-col">
+            <p className="text-lg font-bold">비밀번호 재설정</p>
             <p className="text-sm text-gray-400">
               회원가입 시 등록한 이메일 주소를 입력해 주세요.
             </p>
-          </div>
-          <div className="flex flex-col">
             <label htmlFor="email" className="text-xs">
               이메일
             </label>
@@ -125,8 +195,31 @@ export default function ResetPassword() {
         </form>
       </div>
       <Modal
-        modalOpen={isModalOpen}
-        setModalOpen={setIsModalOpen}
+        modalOpen={isIdModalOpen}
+        setModalOpen={setIsIdModalOpen}
+        parentClass={
+          "fixed z-50 inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+        }
+        childClass={"relative bg-neutral-100 p-6 rounded-lg text-center"}
+        contentMotion={contentMotion}
+      >
+        <div className="mb-2 flex flex-grow flex-col items-center justify-center">
+          <p className="pb-6 sm:text-lg">{watch('findIdEmail')}의 아이디</p>
+          <p className="bg-green-100 p-1 mb-1">{yourId}</p>
+        </div>
+        <div className="mt-auto w-full">
+          <Button
+            className={tomatoBtn}
+            style={"w-full text-sm"}
+            onClick={() => navigate("/login")}
+          >
+            로그인 하러 가기
+          </Button>
+        </div>
+      </Modal>
+      <Modal
+        modalOpen={isPwModalOpen}
+        setModalOpen={setIsPwModalOpen}
         parentClass={
           "fixed z-50 inset-0 bg-black bg-opacity-50 flex items-center justify-center"
         }

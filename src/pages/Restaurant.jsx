@@ -100,6 +100,7 @@ export default function Region() {
                     <span>{restaurant.name}</span>
                     <span className="text-xs opacity-50">{foodTypeMap[restaurant.foodType]}</span>
                   </div>
+                  <p className="text-xs">{restaurant.location}</p>
                   <Rating rating={restaurant.rating} ratingNum={restaurant.ratingNum} />
                   <span className="text-sm opacity-50">
                     {restaurant.parking && (

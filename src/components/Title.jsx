@@ -95,6 +95,7 @@ export default function Title() {
               <SearchRestaurant
                 searchInputValue={searchInputValue}
                 setSearchInputValue={setSearchInputValue}
+                onSearch={() => search(searchType, searchInputValue)} 
               />
               {/* <SearchCalendar /> */}
               <SearchType handleTypeChange={(e) => handleTypeChange(e)} />

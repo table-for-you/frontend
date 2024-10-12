@@ -145,7 +145,13 @@ export default function MenuManage() {
                                                 >
                                                     메뉴 수정
                                                 </Button>
-                                                <Button onClick={() => deleteMenu(menu.id)}>메뉴 삭제</Button>
+                                                <Button onClick={() => {
+                                                    if (confirm('정말로 메뉴를 삭제하시겠습니까?')) {
+                                                        deleteMenu(menu.id)
+                                                    }
+                                                }}
+                                                >메뉴 삭제
+                                                </Button>
                                             </div>
                                         </div>
                                     </div>

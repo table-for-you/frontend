@@ -90,7 +90,12 @@ export default function MyRestaurant() {
                 >
                   예약 관리
                 </Button>
-                <Button onClick={() => deleteRestaurant(restaurant.id)}>
+                <Button onClick={() => {
+                  if (confirm('정말로 가게를 삭제하시겠습니까?')) {
+                    deleteRestaurant(restaurant.id)
+                  }
+                }
+                }>
                   가게 삭제
                 </Button>
               </div>
