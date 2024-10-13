@@ -73,7 +73,6 @@ export default function Header() {
     }
   }, [navigate, accessToken, notificationSize])
 
-  console.log(notificationSize);
 
   // const logout = () => {
   //   try {

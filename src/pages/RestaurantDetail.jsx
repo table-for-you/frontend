@@ -12,6 +12,9 @@ import Calendar from "../components/Calendar";
 import SearchUserCount from "../components/search/SearchUserCount";
 import { useSelector } from "react-redux";
 import DraggableScroller from "../components/DraggableScroller";
+import RestaurantMap from "../components/RestaurantMap.jsx";
+import { Link } from "react-scroll";
+
 
 export default function RegionDetail() {
   const { accessToken } = useSelector((state) => state.authToken);
@@ -315,15 +318,27 @@ export default function RegionDetail() {
                 {restaurantDetails.name}
               </span>
               <LikeCount likeCount={restaurantDetails.likeCount} />
-              <Rating rating={restaurantDetails.rating} />
+              <Rating rating={restaurantDetails.rating} ratingNum={restaurantDetails.ratingNum} />
               <div className="mt-2 flex flex-col text-sm gap-1">
                 <div className="flex items-center gap-1">
                   <span className="material-symbols-outlined">
                     map
                   </span>
-                  <span>
-                    {restaurantDetails.location}
-                  </span>
+                  <div className="flex gap-1">
+                    <span>
+                      {restaurantDetails.location}
+                    </span>
+                    <Link
+                      to="location"
+                      smooth={true}
+                      duration={1000}
+                    >
+                      <span className="cursor-pointer text-blue-500 hover:underline">
+                        지도보기
+                      </span>
+                    </Link>
+                  </div>
+
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="material-symbols-outlined">
@@ -439,10 +454,10 @@ export default function RegionDetail() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 mb-2">
             <p className="text-lg">메뉴</p>
             {myMenu.map((menu) => (
-              <div key={menu.id} className="flex flex-col justify-between gap-3 border-b-2 p-2 sm:flex-row">
+              <div key={menu.id} className="flex flex-col justify-between gap-3 border-b-2  sm:flex-row">
                 <div className="w-full sm:w-[200px]">
                   <img src={menu.menuImage} className="rounded-lg object-cover h-60 w-full sm:h-44" />
                 </div>
@@ -455,6 +470,14 @@ export default function RegionDetail() {
               </div>
             ))}
           </div>
+          <p className="text-lg mb-2" id="location">위치</p>
+          <RestaurantMap
+            size={"w-full min-h-[60vh] rounded-lg"}
+            latitude={restaurantDetails.latitude}
+            longitude={restaurantDetails.longitude}
+            name={restaurantDetails.name}
+          />
+
 
           <Modal
             modalOpen={isModalOpen}

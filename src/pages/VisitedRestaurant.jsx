@@ -6,12 +6,18 @@ import { useNavigate } from "react-router-dom";
 import Rating from "../components/Rating";
 import Button from "../components/Button";
 import { tomatoBtn } from "../constants/style";
+import Modal from "../components/Modal";
 
 export default function VisitedRestaurant() {
     const [isLoading, setIsLoading] = useState(true);
     const [visitedInfo, setVisitedInfo] = useState([]);
     const [likedInfo, setLikedInfo] = useState([]);
     const [liked, setLiked] = useState({});
+    const [star, setStar] = useState(5);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedRestaurantId, setSelectedRestaurantId] = useState(null);
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const [fadeOut, setFadeOut] = useState(false);
 
     const { accessToken } = useSelector((state) => state.authToken);
     const naviage = useNavigate();
@@ -47,6 +53,47 @@ export default function VisitedRestaurant() {
             console.error(err);
         }
     }
+    const contentMotion = {
+        initial: { opacity: 0, y: -200 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: -200 },
+        transition: {
+            type: "spring",
+            stiffness: 300,
+            damping: 25,
+            duration: 0.5,
+        },
+    };
+
+    const updateRating = async () => {
+        const params = {
+            rating: star
+        }
+
+        const config = {
+            headers: {
+                Authorization: accessToken.token
+            },
+            params: params
+        }
+
+        try {
+            const res = api.patch(`/restaurants/${selectedRestaurantId}/update-rating`, null, config);
+            setIsModalOpen(false);
+            setShowSuccessMessage(true);
+
+            setTimeout(() => {
+                setFadeOut(true);
+            }, 2000);
+
+            setTimeout(() => {
+                setShowSuccessMessage(false);
+                setFadeOut(false);
+            }, 3000);
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     const getLikedRestaurant = async () => {
         if (accessToken) {
@@ -76,9 +123,7 @@ export default function VisitedRestaurant() {
         }
     }
 
-    const toggleRating = async () => {
-        
-    }
+
 
     useEffect(() => {
         const getVisitedRestaurant = async () => {
@@ -100,7 +145,6 @@ export default function VisitedRestaurant() {
                 naviage('/')
             }
         }
-
 
         getVisitedRestaurant();
         getLikedRestaurant();
@@ -149,21 +193,22 @@ export default function VisitedRestaurant() {
                                                 }}
                                             >
                                                 {liked[visited.restaurantInfoDto.id] ?
-                                                    <div className="bg-gray-500 text-white text-sm flex items-center gap-1 px-3 py-2">
+                                                    <div className="bg-gray-500 text-white text-sm flex items-center gap-1 px-3 py-2 rounded-lg">
                                                         <span>🤍</span>
                                                         <span>좋아요 취소</span>
                                                     </div> :
-                                                    <div className="bg-red-500 text-white text-sm flex items-center gap-1 px-3 py-2">
+                                                    <div className="bg-red-500 text-white text-sm flex items-center gap-1 px-3 py-2 rounded-lg">
                                                         <span>🤍</span>
                                                         <span>좋아요</span>
                                                     </div>
                                                 }
                                             </div>
                                             <div
-                                                className="bg-yellow-500 text-white text-sm flex items-center gap-1 px-3 py-2"
+                                                className="bg-yellow-500 text-white text-sm flex items-center gap-1 px-3 py-2 rounded-lg"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    console.log('star');
+                                                    setSelectedRestaurantId(visited.restaurantInfoDto.id);
+                                                    setIsModalOpen(true);
                                                 }}
                                             >
                                                 <span>★</span>
@@ -198,7 +243,59 @@ export default function VisitedRestaurant() {
                             ))}
                         </div>
                     </div>
+                    <Modal
+                        modalOpen={isModalOpen}
+                        setModalOpen={setIsModalOpen}
+                        parentClass={
+                            "fixed z-50 inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+                        }
+                        childClass={"relative bg-neutral-100 p-6 rounded-lg text-center"}
+                        contentMotion={contentMotion}
+                    >
+                        <div className="flex justify-center">
+                            {[...Array(5)].map((_, index) => (
+                                <div
+                                    key={index}
+                                    className="relative cursor-pointer"
+                                    onClick={(e) => {
+                                        const { left, width } = e.target.getBoundingClientRect();
+                                        const clickPosition = e.clientX - left;
+                                        const score = clickPosition < width / 2 ? index + 0.5 : index + 1;
+                                        setStar(score);
+                                    }}
+                                >
+                                    <span className={`text-4xl ${star >= index + 1 ? "text-yellow-500" : "text-gray-400"}`}>
+                                        ★
+                                    </span>
+                                    {star === index + 0.5 && (
+                                        <span
+                                            className="absolute left-0 text-4xl text-yellow-500 overflow-hidden"
+                                            style={{ width: "50%" }}
+                                        >
+                                            ★
+                                        </span>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                        <p className="mb-5">평점: {star}</p>
+                        <span
+                            className="bg-yellow-400 text-white px-4 py-2 rounded-lg cursor-pointer"
+                            onClick={updateRating}
+                        >
+                            등록하기
+                        </span>
+                    </Modal>
+                    {showSuccessMessage && (
+                        <div
+                            className={`fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded-lg transition-opacity duration-1000 
+                                ${fadeOut ? 'opacity-0' : 'opacity-100'}`}
+                        >
+                            등록되었습니다.
+                        </div>
+                    )}
                 </>
+
             }
         </div>
     )

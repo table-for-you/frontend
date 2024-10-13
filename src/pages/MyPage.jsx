@@ -59,7 +59,7 @@ export default function MyPage() {
                         <p className="font-bold">나의 정보</p>
                         <div className="bg-neutral-100 shadow-lg p-4 flex flex-col gap-3">
                             <p>유저 고유 번호 : {myInfo.id}</p>
-                            <p>유저명 : {myInfo.username}</p>
+                            <p>아이디 : {myInfo.username}</p>
                             <p>역할 : {myInfo.role}</p>
                             <p>닉네임 : {myInfo.nickname}</p>
                             <p>이메일 : {myInfo.email}</p>

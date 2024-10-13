@@ -48,7 +48,7 @@ export default function UserDetails() {
                 <Loading /> :
                 <div className="bg-neutral-100 shadow-lg p-4 flex flex-col gap-3">
                     <p>유저 고유 번호 : {user.id}</p>
-                    <p>유저명 : {user.username}</p>
+                    <p>아이디 : {user.username}</p>
                     <p>역할 : {user.role}</p>
                     <p>닉네임 : {user.nickname}</p>
                     <p>이메일 : {user.email}</p>

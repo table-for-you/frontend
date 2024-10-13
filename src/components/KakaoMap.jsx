@@ -239,6 +239,7 @@ export default function KakaoMap({ size }) {
             type="text"
             value={searchInputValue}
             onChange={handleInputChange}
+            placeholder="서울"
             className="border border-gray-300 rounded-md px-1 py-1  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
