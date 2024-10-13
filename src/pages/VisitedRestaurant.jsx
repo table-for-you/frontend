@@ -5,7 +5,7 @@ import Loading from "../components/Loading";
 import { useNavigate } from "react-router-dom";
 import Rating from "../components/Rating";
 import Button from "../components/Button";
-import { tomatoBtn } from "../constants/style";
+import { inputStyle, tomatoBtn } from "../constants/style";
 import Modal from "../components/Modal";
 
 export default function VisitedRestaurant() {
@@ -14,9 +14,13 @@ export default function VisitedRestaurant() {
     const [likedInfo, setLikedInfo] = useState([]);
     const [liked, setLiked] = useState({});
     const [star, setStar] = useState(5);
+    const [createReviewContent, setcreateReviewContent] = useState('');
+    const [myReview, setMyReview] = useState([]);
+    const [reviewed, setReviewed] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRestaurantId, setSelectedRestaurantId] = useState(null);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const [reviewMessage, setReviewMessage] = useState('');
     const [fadeOut, setFadeOut] = useState(false);
 
     const { accessToken } = useSelector((state) => state.authToken);
@@ -65,21 +69,21 @@ export default function VisitedRestaurant() {
         },
     };
 
-    const updateRating = async () => {
-        const params = {
-            rating: star
+    const createReview = async () => {
+        const data = {
+            rating: star,
+            content: createReviewContent
         }
-
         const config = {
             headers: {
                 Authorization: accessToken.token
             },
-            params: params
         }
 
         try {
-            const res = api.patch(`/restaurants/${selectedRestaurantId}/update-rating`, null, config);
+            const res = await api.post(`/restaurants/${selectedRestaurantId}/reviews`, data, config);
             setIsModalOpen(false);
+            setReviewMessage('등록되었습니다.')
             setShowSuccessMessage(true);
 
             setTimeout(() => {
@@ -90,6 +94,78 @@ export default function VisitedRestaurant() {
                 setShowSuccessMessage(false);
                 setFadeOut(false);
             }, 3000);
+            getMyReviews();
+            getVisitedRestaurant();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    const reviseReview = async (restaurantId, reviewId) => {
+        const data = {
+            rating: star,
+            content: createReviewContent
+        }
+
+        const config = {
+            headers: {
+                Authorization: accessToken.token
+            },
+        }
+        try {
+            const res = await api.put(`/restaurants/${restaurantId}/reviews/${reviewId}`, data, config);
+
+            setReviewMessage('수정되었습니다.')
+            setShowSuccessMessage(true);
+
+            setTimeout(() => {
+                setFadeOut(true);
+            }, 2000);
+
+            setTimeout(() => {
+                setShowSuccessMessage(false);
+                setFadeOut(false);
+            }, 3000);
+            getMyReviews();
+            setIsModalOpen(false);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    const deleteReview = async (restaurantId, reviewId) => {
+        const params = {
+            rating: star,
+        }
+
+        const config = {
+            headers: {
+                Authorization: accessToken.token
+            },
+            params: params
+        }
+        try {
+            const res = await api.delete(`/restaurants/${restaurantId}/reviews/${reviewId}`, config);
+
+            setStar(5);
+            setcreateReviewContent('');
+
+            setReviewMessage('삭제되었습니다.')
+            setShowSuccessMessage(true);
+
+            setTimeout(() => {
+                setFadeOut(true);
+            }, 2000);
+
+            setTimeout(() => {
+                setShowSuccessMessage(false);
+                setFadeOut(false);
+            }, 3000);
+
+
+            getMyReviews();
+            getVisitedRestaurant();
+            setIsModalOpen(false);
         } catch (err) {
             console.error(err);
         }
@@ -106,10 +182,9 @@ export default function VisitedRestaurant() {
             try {
                 const res = await api.get('/users/like-restaurants', config);
                 setLikedInfo(res.data);
-                console.log(res.data);
                 const likedRestaurants = {};
                 res.data.forEach((restaurant) => {
-                    likedRestaurants[restaurant.id] = true;
+                    likedRestaurants[restaurant.id] = true
                 });
                 setLiked(likedRestaurants);
             } catch (err) {
@@ -118,38 +193,66 @@ export default function VisitedRestaurant() {
                 setIsLoading(false);
             }
         } else {
-            alert('권한이 없습니다.');
             naviage('/')
         }
     }
 
 
-
-    useEffect(() => {
-        const getVisitedRestaurant = async () => {
-            if (accessToken) {
-                const config = {
-                    headers: {
-                        Authorization: accessToken.token
-                    }
-                }
-
-                try {
-                    const res = await api.get('/users/restaurants', config);
-                    setVisitedInfo(res.data);
-                } catch (err) {
-                    console.error(err);
-                }
-            } else {
-                alert('권한이 없습니다.');
-                naviage('/')
+    const getMyReviews = async () => {
+        const config = {
+            headers: {
+                Authorization: accessToken.token
             }
         }
 
+        try {
+            const res = await api.get('/users/reviews', config);
+            setMyReview(res.data);
+            // console.log(res.data)
+
+            const reviewedRestaurants = {};
+            res.data.forEach((restaurant) => {
+                reviewedRestaurants[restaurant.restaurantId] = {
+                    rating: restaurant.rating,
+                    content: restaurant.content,
+                    reviewId: restaurant.reviewId
+                }
+            })
+            setReviewed(reviewedRestaurants);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    const getVisitedRestaurant = async () => {
+        if (accessToken) {
+            const config = {
+                headers: {
+                    Authorization: accessToken.token
+                }
+            }
+
+            try {
+                const res = await api.get('/users/restaurants', config);
+                setVisitedInfo(res.data);
+            } catch (err) {
+                console.error(err);
+            }
+        } else {
+            alert('권한이 없습니다.');
+            naviage('/')
+        }
+    }
+    useEffect(() => {
+
+
         getVisitedRestaurant();
         getLikedRestaurant();
+        getMyReviews();
     }, [accessToken, naviage]);
 
+    const handleReviewChange = (e) => {
+        setcreateReviewContent(e.target.value);
+    }
 
     return (
         <div className="px-5 pt-5 md:px-14 lg:px-28 xl:px-44 2xl:px-72">
@@ -203,17 +306,32 @@ export default function VisitedRestaurant() {
                                                     </div>
                                                 }
                                             </div>
-                                            <div
-                                                className="bg-yellow-500 text-white text-sm flex items-center gap-1 px-3 py-2 rounded-lg"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setSelectedRestaurantId(visited.restaurantInfoDto.id);
-                                                    setIsModalOpen(true);
-                                                }}
-                                            >
-                                                <span>★</span>
-                                                <span> 평점 입력</span>
-                                            </div>
+                                            {reviewed[visited.restaurantInfoDto.id] ?
+                                                <div
+                                                    className="bg-yellow-500 text-white text-sm flex items-center gap-1 px-3 py-2 rounded-lg"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedRestaurantId(visited.restaurantInfoDto.id);
+                                                        setStar(reviewed[visited.restaurantInfoDto.id].rating);  // 기존 rating 값 설정
+                                                        setcreateReviewContent(reviewed[visited.restaurantInfoDto.id].content);  // 기존 content 값 설정
+                                                        setIsModalOpen(true);
+                                                    }}
+                                                >
+                                                    <span>★</span>
+                                                    <span> 평점 수정</span>
+                                                </div> :
+                                                <div
+                                                    className="bg-yellow-500 text-white text-sm flex items-center gap-1 px-3 py-2 rounded-lg"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedRestaurantId(visited.restaurantInfoDto.id);
+                                                        setIsModalOpen(true);
+                                                    }}
+                                                >
+                                                    <span>★</span>
+                                                    <span> 평점 입력</span>
+                                                </div>
+                                            }
                                         </div>
 
                                     </div>
@@ -278,20 +396,58 @@ export default function VisitedRestaurant() {
                                 </div>
                             ))}
                         </div>
-                        <p className="mb-5">평점: {star}</p>
-                        <span
-                            className="bg-yellow-400 text-white px-4 py-2 rounded-lg cursor-pointer"
-                            onClick={updateRating}
-                        >
-                            등록하기
-                        </span>
+                        {reviewed[selectedRestaurantId] ?
+                            <div>
+                                <p className="mb-5">평점: {star}</p>
+                                <div className="mb-3">
+                                    <input type="text"
+                                        className={`${inputStyle} h-24`}
+                                        placeholder="리뷰를 남겨보세요!"
+                                        value={createReviewContent}
+                                        onChange={handleReviewChange}
+                                    />
+                                </div>
+                                <span
+                                    className="bg-yellow-400 text-white px-4 py-2 rounded-lg cursor-pointer text-sm mr-2"
+                                    onClick={() => reviseReview(selectedRestaurantId, reviewed[selectedRestaurantId].reviewId)}
+                                >
+                                    수정하기
+                                </span>
+                                <span
+                                    className="bg-red-400 text-white px-4 py-2 rounded-lg cursor-pointer text-sm"
+                                    onClick={() => deleteReview(selectedRestaurantId, reviewed[selectedRestaurantId].reviewId)}
+                                >
+                                    삭제하기
+                                </span>
+                            </div>
+                            :
+                            <div>
+                                <div className="mb-3">
+                                    <p className="mb-5">평점: {star}</p>
+                                    <input type="text"
+                                        className={`${inputStyle} h-24`}
+                                        placeholder="리뷰를 남겨보세요!"
+                                        value={createReviewContent || ''}
+                                        onChange={handleReviewChange}
+                                    />
+                                </div>
+                                <span
+                                    className="bg-yellow-400 text-white px-4 py-2 rounded-lg cursor-pointer text-sm"
+                                    onClick={createReview}
+                                >
+                                    등록하기
+                                </span>
+                            </div>
+
+                        }
+
                     </Modal>
                     {showSuccessMessage && (
                         <div
                             className={`fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded-lg transition-opacity duration-1000 
                                 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}
                         >
-                            등록되었습니다.
+                            {reviewMessage}
                         </div>
                     )}
                 </>

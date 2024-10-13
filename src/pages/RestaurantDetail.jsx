@@ -478,7 +478,6 @@ export default function RegionDetail() {
             name={restaurantDetails.name}
           />
 
-
           <Modal
             modalOpen={isModalOpen}
             setModalOpen={(isOpen) => {
