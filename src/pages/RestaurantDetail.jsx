@@ -29,6 +29,9 @@ export default function RegionDetail() {
   const [myReservations, setMyReservations] = useState({});
   const [restaurantWaiting, setRestaurantwaiting] = useState(null);
   const [myWaiting, setMyWaiting] = useState(null);
+  const [liked, setLiked] = useState([])
+  const [userReviews, setUserReviews] = useState([]);
+
 
   const navigate = useNavigate();
 
@@ -54,6 +57,17 @@ export default function RegionDetail() {
     'SEVEN_PM': '19:00',
     'EIGHT_PM': '20:00',
   };
+
+  const getUserReviews = async () => {
+    try {
+      const res = await api.get(`public/restaurants/${restaurantId}/reviews`);
+      setUserReviews(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+
 
   const getMyWaiting = async () => {
     if (accessToken) {
@@ -85,19 +99,71 @@ export default function RegionDetail() {
     }
   }
 
+  const getLikedRestaurant = async () => {
+    if (accessToken) {
+      const config = {
+        headers: {
+          Authorization: accessToken.token
+        }
+      }
 
-  useEffect(() => {
-    const fetchRegionDetailRestaurant = async () => {
       try {
-        const res = await api.get(`/public/restaurants/${restaurantId}`);
-        setRestaurantDetails(res.data);
+        const res = await api.get('/users/like-restaurants', config);
+        const likedRestaurants = {};
+        res.data.forEach((restaurant) => {
+          likedRestaurants[restaurant.id] = true
+        });
+        setLiked(likedRestaurants);
       } catch (err) {
         console.error(err);
-      } finally {
-        setIsLoading(false);
       }
-    };
+    }
+  }
 
+  const toggleLike = async (restaurantId) => {
+    if (accessToken === null) {
+      alert('로그인 후 진행해주세요.')
+    }
+
+    const config = {
+      headers: {
+        Authorization: accessToken.token
+      }
+    }
+
+    try {
+      if (liked[restaurantId]) {
+        await api.delete(`/restaurants/${restaurantId}/like`, config);
+      } else {
+        await api.post(`/restaurants/${restaurantId}/like`, null, config);
+      }
+
+      setLiked((prevLiked) => ({
+        ...prevLiked,
+        [restaurantId]: !prevLiked[restaurantId]
+      }))
+
+      getLikedRestaurant();
+      fetchRegionDetailRestaurant();
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const fetchRegionDetailRestaurant = async () => {
+    try {
+      const res = await api.get(`/public/restaurants/${restaurantId}`);
+      setRestaurantDetails(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
     const getMyMenu = async () => {
       try {
         const res = await api.get(`/public/restaurants/${restaurantId}/menus`);
@@ -108,11 +174,12 @@ export default function RegionDetail() {
     };
 
     fetchRegionDetailRestaurant();
+    getUserReviews();
+    getLikedRestaurant();
     getMyMenu();
     getMyWaiting();
     getRestaurantWaiting();
   }, [restaurantId]);
-
 
   const contentMotion = {
     initial: { opacity: 0, y: -200 },
@@ -311,14 +378,36 @@ export default function RegionDetail() {
           <div className="border-b mb-2">
             <RestaurantSlider mainImage={restaurantDetails.mainImage} subImages={restaurantDetails.subImages} />
             <div className="flex flex-col gap-1">
-              <span className="text-sm opacity-50">
+              <span className="text-sm opacity-50 mt-1">
                 {foodTypeMap[restaurantDetails.foodType]}
               </span>
-              <span className="text-lg font-bold">
-                {restaurantDetails.name}
-              </span>
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-bold">
+                  {restaurantDetails.name}
+                </span>
+                <span
+                  className="text-2xl sm:text-3xl cursor-pointer"
+                  onClick={() => toggleLike(restaurantId)}
+                >
+                  {liked[restaurantId] ? "❤️" : "🤍"}
+                </span>
+              </div>
+
+
               <LikeCount likeCount={restaurantDetails.likeCount} />
-              <Rating rating={restaurantDetails.rating} ratingNum={restaurantDetails.ratingNum} />
+              <div className="flex gap-1 items-center">
+                <Rating rating={restaurantDetails.rating} ratingNum={restaurantDetails.ratingNum} />
+                <Link
+                  to="review"
+                  smooth={true}
+                  duration={1000}
+                  offset={-50}
+                >
+                  <span className="cursor-pointer text-blue-500 hover:underline text-sm">
+                    리뷰 보기
+                  </span>
+                </Link>
+              </div>
               <div className="mt-2 flex flex-col text-sm gap-1">
                 <div className="flex items-center gap-1">
                   <span className="material-symbols-outlined">
@@ -334,7 +423,7 @@ export default function RegionDetail() {
                       duration={1000}
                     >
                       <span className="cursor-pointer text-blue-500 hover:underline">
-                        지도보기
+                        지도 보기
                       </span>
                     </Link>
                   </div>
@@ -455,22 +544,44 @@ export default function RegionDetail() {
           </div>
 
           <div className="flex flex-col gap-3 mb-2">
-            <p className="text-lg">메뉴</p>
+            <p className="sm:text-lg">메뉴</p>
             {myMenu.map((menu) => (
               <div key={menu.id} className="flex flex-col justify-between gap-3 border-b-2  sm:flex-row">
                 <div className="w-full sm:w-[200px]">
                   <img src={menu.menuImage} className="rounded-lg object-cover h-60 w-full sm:h-44" />
                 </div>
                 <div className="flex flex-col justify-between">
-                  <div className="text-lg flex flex-col h-full justify-between sm:items-end">
-                    <p >{menu.name}</p>
+                  <div className="flex flex-col h-full justify-between sm:items-end sm:text-lg">
+                    <p>{menu.name}</p>
                     <p>{menu.price}원</p>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          <p className="text-lg mb-2" id="location">위치</p>
+
+          <div className="flex flex-col gap-3 mb-2">
+            <p className="sm:text-lg" id="review">리뷰</p>
+            <div className="bg-neutral-100 p-2 flex flex-col sm:flex-wrap sm:flex-row gap-3 rounded-lg max-h-[30vh] overflow-y-scroll">
+              {userReviews.map((review) =>
+                <div
+                  key={review.reviewId}
+                  className="bg-white p-2 rounded-lg shadow-sm h-[6rem]"
+                >
+                  <div className="mb-2 flex justify-between items-center">
+                    {review.nickname}님
+                    <span className="text-sm">
+                      ⭐{review.rating}
+                    </span>
+                  </div>
+                  <p>{review.content}</p>
+
+                </div>
+              )}
+            </div>
+          </div>
+
+          <p className="sm:text-lg mb-2" id="location">위치</p>
           <RestaurantMap
             size={"w-full min-h-[60vh] rounded-lg"}
             latitude={restaurantDetails.latitude}

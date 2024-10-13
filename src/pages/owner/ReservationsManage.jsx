@@ -90,7 +90,7 @@ export default function ReservationsManage() {
                 Authorization: accessToken.token
             }
         }
-
+        console.log('test');
         try {
             const res = await api.get(`/owner/restaurants/${restaurantId}/queue-reservations`, config);
             setUserWaiting(res.data);
@@ -250,7 +250,7 @@ export default function ReservationsManage() {
                                 <p>{selectedDate}</p>
                                 <span
                                     className="material-symbols-outlined cursor-pointer"
-                                    onClick={getTimeSlotUserReservations}
+                                    onClick={getUserWaiting}
                                 >
                                     refresh
                                 </span>

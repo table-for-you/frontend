@@ -24,7 +24,8 @@ export default function Notifications() {
 
                 try {
                     const res = await api.get("/users/notifications", config);
-                    setNotifications(res.data);
+                    const sortedNotifications = res.data.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
+                    setNotifications(sortedNotifications);
                 } catch (err) {
                     console.error(err);
                 } finally {

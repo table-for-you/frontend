@@ -103,6 +103,7 @@ export default function VisitedRestaurant() {
 
     const reviseReview = async (restaurantId, reviewId) => {
         const data = {
+            preRating: reviewed[restaurantId].rating,
             rating: star,
             content: createReviewContent
         }
@@ -127,6 +128,7 @@ export default function VisitedRestaurant() {
                 setFadeOut(false);
             }, 3000);
             getMyReviews();
+            getVisitedRestaurant();
             setIsModalOpen(false);
         } catch (err) {
             console.error(err);
