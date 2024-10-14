@@ -16,7 +16,7 @@ export default function BlackPick() {
   ));
 
   return (
-    <div id="black-pick" className="mt-16">
+    <div id="black-pick" className="mt-10">
       <div className="mb-4">
         <p className="">이번 주 블랙 PICK</p>
         <p className="text-sm opacity-40">

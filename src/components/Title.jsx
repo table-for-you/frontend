@@ -59,6 +59,10 @@ export default function Title() {
   }
 
   const search = (type, searchInputValue) => {
+    if (!searchInputValue.trim()) {
+      alert("검색어를 입력해 주세요.");
+      return;
+    }
     navigate(`/restaurant/${searchInputValue}/`, { state: { searchType: type } })
   }
 
@@ -95,7 +99,7 @@ export default function Title() {
               <SearchRestaurant
                 searchInputValue={searchInputValue}
                 setSearchInputValue={setSearchInputValue}
-                onSearch={() => search(searchType, searchInputValue)} 
+                onSearch={() => search(searchType, searchInputValue)}
               />
               {/* <SearchCalendar /> */}
               <SearchType handleTypeChange={(e) => handleTypeChange(e)} />
@@ -117,10 +121,10 @@ export default function Title() {
       </div>
 
       <Link
-        to="black-pick"
+        to="recommend"
         smooth={true}
         duration={1000}
-        offset={-85}
+        offset={-60}
         className="absolute bottom-5 left-1/2 inline-flex -translate-x-1/2 -translate-y-1/2 transform cursor-pointer items-center justify-center p-2"
       >
         <span className="animate-ripple absolute h-8 w-8 rounded-full border border-white"></span>

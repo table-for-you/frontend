@@ -23,6 +23,7 @@ import Footer from "./components/Footer";
 import UserDetails from "./pages/admin/UserDetails";
 import MyPage from "./pages/MyPage";
 import VisitedRestaurant from "./pages/VisitedRestaurant";
+import RecommendMenu from "./pages/RecommendMenu";
 
 function App() {
   return (
@@ -33,12 +34,13 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />}></Route>
             <Route path="/login" element={<Login />}></Route>
+            <Route path="/recommend-menu" element={<RecommendMenu />}></Route>
             <Route path="/" element={<Login />}></Route>
             <Route path="/register" element={<Register />}></Route>
             <Route path="/reset-idpw" element={<ResetIdPw />}></Route>
             <Route path="/restaurant/:name" element={<Restaurant />}></Route>
             <Route path="/mypage" element={<MyPage />}></Route>
-            <Route path="/visited-restaurants" element={<VisitedRestaurant/>}></Route>
+            <Route path="/visited-restaurants" element={<VisitedRestaurant />}></Route>
             <Route
               path="/restaurant/:name/details/:restaurantId"
               element={<RestaurantDetail />}
