@@ -12,6 +12,7 @@ export default function Region() {
   const { state } = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [myMenu, setMyMenu] = useState([]);
+  const [sortOpt, setSortOpt] = useState('rating');
 
   const regionMap = {
     "서울": "SEOUL",
@@ -61,12 +62,16 @@ export default function Region() {
           searchName = foodTypeMap[searchName];
         }
 
+        console.log(sortOpt);
+
         const params = {
           type: state?.searchType || "location",
           "search-keyword": searchName,
+          'sort-by': sortOpt
         };
         const res = await api.get("/public/restaurants", { params });
         setRestaurantList(res.data.content);
+        console.log(res.data.content);
       } catch (err) {
         console.error(err);
       } finally {
@@ -74,13 +79,16 @@ export default function Region() {
       }
     };
     fetchRestaurantList();
-  }, [name]);
+  }, [name, sortOpt]);
   const navigate = useNavigate();
 
   const handleShowRestaurantDetail = (restaurantId) => {
     navigate(`/restaurant/${name}/details/${restaurantId}`);
   };
 
+  const handleSortChange = (e) => {
+    setSortOpt(e.target.value);
+  }
 
   return (
     <div className="px-5 pt-5 md:px-14 lg:px-28 xl:px-44 2xl:px-72">
@@ -91,7 +99,7 @@ export default function Region() {
           <div className="flex w-full flex-col gap-3">
             <div className="flex justify-between">
               <span className="p-2 text-xl font-bold">{`'${name}' 식당 ${restaurantList.length}개`}</span>
-              <SelectList />
+              <SelectList handleSortChange={handleSortChange} />
             </div>
             {restaurantList.map((restaurant) => (
               <div

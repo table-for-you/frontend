@@ -2,7 +2,7 @@ import { useState } from "react";
 
 
 export default function Filter() {
-  const buttons = ['매진 식당 제외', '주차 가능', '한식', '중식', '일식', '양식'];
+  const buttons = ['주차 가능', '한식', '중식', '일식', '양식'];
   const [clickedButtons, setClickedButtons] = useState(Array(buttons.length).fill(false));
 
   const handleClick = (index) => {

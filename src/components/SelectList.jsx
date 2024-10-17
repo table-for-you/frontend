@@ -1,12 +1,10 @@
-export default function SelectList() {
+export default function SelectList({ handleSortChange }) {
+
   return (
     <div>
-      <select className="rounded-lg bg-neutral-100 p-2">
-        <option value="distance">
-          거리순
-        </option>
-        <option value="highest-rating">평점순</option>
-        <option value="most-reviews">리뷰순</option>
+      <select className="rounded-lg bg-neutral-100 p-2" onChange={handleSortChange}>
+        <option value="rating">평점 높은 순</option>
+        <option value="ratingNum">리뷰 많은 순</option>
       </select>
     </div>
   );
