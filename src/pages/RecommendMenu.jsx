@@ -8,7 +8,7 @@ export default function RecommendMenu() {
     const [selectedFood, setSelectedFood] = useState([]);
     const [resultFood, setResultFood] = useState('');
     const [isAnimating, setIsAnimating] = useState(false);
-    const [isFading, setIsFading] = useState(false); 
+    const [isFading, setIsFading] = useState(false);
     const [searchType, setSearchType] = useState("food");
     const navigate = useNavigate();
     const [navi, setNavi] = useState(false);
@@ -44,6 +44,9 @@ export default function RecommendMenu() {
                     setTimeout(() => { setIsFading(true), setNavi(true) }, 100);
                 }
             }, 100);
+        } else {
+            alert('음식 종류를 최소 한가지 선택해주세요.');
+            return;
         }
     };
 

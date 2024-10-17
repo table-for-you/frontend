@@ -40,6 +40,13 @@ export default function Region() {
     '양식': 'WESTERN'
   };
 
+  const covertFoodType = {
+    'KOREAN': '한식',
+    'CHINESE': '중식',
+    'JAPANESE': '일식',
+    'WESTERN': '양식'
+  }
+
   useEffect(() => {
     const fetchRestaurantList = async () => {
       try {
@@ -98,7 +105,7 @@ export default function Region() {
                 <div className="flex flex-col sm:ml-5 text-lg gap-1">
                   <div className="flex items-center gap-1 font-bold">
                     <span>{restaurant.name}</span>
-                    <span className="text-xs opacity-50">{foodTypeMap[restaurant.foodType]}</span>
+                    <span className="text-xs opacity-50">{covertFoodType[restaurant.foodType]}</span>
                   </div>
                   <p className="text-xs">{restaurant.location}</p>
                   <Rating rating={restaurant.rating} ratingNum={restaurant.ratingNum} />

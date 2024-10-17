@@ -16,12 +16,14 @@ export default function VisitedRestaurant() {
     const [star, setStar] = useState(5);
     const [createReviewContent, setcreateReviewContent] = useState('');
     const [myReview, setMyReview] = useState([]);
+    const [writenReviews, setWritenReviews] = useState([]);
     const [reviewed, setReviewed] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRestaurantId, setSelectedRestaurantId] = useState(null);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [reviewMessage, setReviewMessage] = useState('');
     const [fadeOut, setFadeOut] = useState(false);
+
 
     const { accessToken } = useSelector((state) => state.authToken);
     const naviage = useNavigate();
@@ -96,6 +98,7 @@ export default function VisitedRestaurant() {
             }, 3000);
             getMyReviews();
             getVisitedRestaurant();
+            getWritenReviews();
         } catch (err) {
             console.error(err);
         }
@@ -130,6 +133,7 @@ export default function VisitedRestaurant() {
             getMyReviews();
             getVisitedRestaurant();
             setIsModalOpen(false);
+            getWritenReviews();
         } catch (err) {
             console.error(err);
         }
@@ -168,6 +172,7 @@ export default function VisitedRestaurant() {
             getMyReviews();
             getVisitedRestaurant();
             setIsModalOpen(false);
+            getWritenReviews();
         } catch (err) {
             console.error(err);
         }
@@ -225,6 +230,22 @@ export default function VisitedRestaurant() {
             console.error(err);
         }
     }
+
+    const getWritenReviews = async () => {
+        const config = {
+            headers: {
+                Authorization: accessToken.token
+            }
+        }
+
+        try {
+            const res = await api.get('/users/reviews', config);
+            setWritenReviews(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     const getVisitedRestaurant = async () => {
         if (accessToken) {
             const config = {
@@ -250,6 +271,7 @@ export default function VisitedRestaurant() {
         getVisitedRestaurant();
         getLikedRestaurant();
         getMyReviews();
+        getWritenReviews();
     }, [accessToken, naviage]);
 
     const handleReviewChange = (e) => {
@@ -358,6 +380,34 @@ export default function VisitedRestaurant() {
                                         >
                                             자세히 보기
                                         </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div>
+                        <p className="font-bold mt-10 mb-4">평점 남긴 가게 목록</p>
+                        <div className="h-[50vh] overflow-y-auto">
+                            {writenReviews.map((review) => (
+                                <div
+                                    key={review.reviewId}
+                                    className="rounded-lg bg-neutral-100 p-5 shadow-lg mb-2 items-center"
+                                >
+                                    <div className="flex justify-between">
+                                        <div>
+                                            <p>{review.restaurantName} ⭐{review.rating}</p>
+                                        </div>
+                                        <Button
+                                            className={tomatoBtn}
+                                            style={"text-sm"}
+                                            onClick={() => naviage(`/restaurant/location/details/${review.restaurantId}`)}
+                                        >
+                                            자세히 보기
+                                        </Button>
+
+                                    </div>
+                                    <div>
+                                        <p>남긴 리뷰 : {review.content}</p>
                                     </div>
                                 </div>
                             ))}
