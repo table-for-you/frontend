@@ -18,6 +18,9 @@ export default function Register() {
 
   const [valNickname, setValNickname] = useState(null);
   const [valId, setValId] = useState(null);
+
+  const [birth, setBirth] = useState('2000-01-01');
+
   const [sendMail, setSendMail] = useState({
     send: false,
     message: "",
@@ -119,6 +122,10 @@ export default function Register() {
     }
   };
 
+  const onBirthChange = (e) => {
+    setBirth(e.target.value);
+  }
+
   const signUp = async () => {
     const data = {
       nickname: watch("nickname"),
@@ -184,7 +191,7 @@ export default function Register() {
 
   return (
     <>
-      <div className="grid h-[calc(100vh-10rem)] place-items-center py-2">
+      <div className="grid h-[100vh] place-items-center py-2">
         <form
           className="relative flex w-full flex-col gap-2 px-4 sm:w-1/2 lg:w-1/3 xl:w-1/4"
           noValidate
@@ -446,6 +453,8 @@ export default function Register() {
             {...register("age", {
               required: "생년월일은 필수 입력입니다.",
             })}
+            value={birth}
+            onChange={onBirthChange}
           />
           {errors.age && (
             <small className="text-red-500">{errors.age.message}</small>

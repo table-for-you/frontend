@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 
-export default function Filter() {
+export default function Filter({ onFilterChange }) {
   const buttons = ['주차 가능', '한식', '중식', '일식', '양식'];
   const [clickedButtons, setClickedButtons] = useState(Array(buttons.length).fill(false));
 
@@ -9,6 +9,10 @@ export default function Filter() {
     const updatedClickedButtons = [...clickedButtons];
     updatedClickedButtons[index] = !updatedClickedButtons[index];
     setClickedButtons(updatedClickedButtons);
+
+
+    const selectedFilters = buttons.filter((_, i) => updatedClickedButtons[i]); // 선택된 필터만 배열에 담음
+    onFilterChange(selectedFilters);
   }
 
   return (

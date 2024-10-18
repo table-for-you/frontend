@@ -6,13 +6,16 @@ import { useState, useEffect } from "react";
 import Loading from "../components/Loading";
 import Rating from "../components/Rating";
 
-export default function Region() {
+export default function Restaurant() {
   const [restaurantList, setRestaurantList] = useState([]);
   const { name } = useParams();
   const { state } = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [myMenu, setMyMenu] = useState([]);
   const [sortOpt, setSortOpt] = useState('rating');
+  const [filteredRestaurantList, setFilteredRestaurantList] = useState([]);
+  const [selectedFilters, setSelectedFilters] = useState([]);
+
 
   const regionMap = {
     "서울": "SEOUL",
@@ -62,7 +65,6 @@ export default function Region() {
           searchName = foodTypeMap[searchName];
         }
 
-        console.log(sortOpt);
 
         const params = {
           type: state?.searchType || "location",
@@ -71,7 +73,7 @@ export default function Region() {
         };
         const res = await api.get("/public/restaurants", { params });
         setRestaurantList(res.data.content);
-        console.log(res.data.content);
+        setFilteredRestaurantList(res.data.content);
       } catch (err) {
         console.error(err);
       } finally {
@@ -80,6 +82,31 @@ export default function Region() {
     };
     fetchRestaurantList();
   }, [name, sortOpt]);
+
+  useEffect(() => {
+    const applyFilters = () => {
+      let filteredList = [...restaurantList];
+
+      if (selectedFilters.includes('주차 가능')) {
+        filteredList = filteredList.filter((restaurant) => restaurant.parking === true);
+      }
+
+      const foodFilters = selectedFilters.filter(filter => ['한식', '중식', '일식', '양식'].includes(filter));
+
+      if (foodFilters.length > 0) {
+        filteredList = filteredList.filter((restaurant) => foodFilters.includes(covertFoodType[restaurant.foodType]));
+      }
+
+      setFilteredRestaurantList(filteredList);
+    }
+
+    applyFilters();
+  }, [selectedFilters, restaurantList]);
+
+  const handleFilterChange = (filters) => {
+    setSelectedFilters(filters);
+  };
+
   const navigate = useNavigate();
 
   const handleShowRestaurantDetail = (restaurantId) => {
@@ -92,7 +119,7 @@ export default function Region() {
 
   return (
     <div className="px-5 pt-5 md:px-14 lg:px-28 xl:px-44 2xl:px-72">
-      <Filter />
+      <Filter onFilterChange={handleFilterChange} />
       <div className="flex gap-6 mt-2">
         {isLoading ?
           <Loading /> :
@@ -101,7 +128,7 @@ export default function Region() {
               <span className="p-2 text-xl font-bold">{`'${name}' 식당 ${restaurantList.length}개`}</span>
               <SelectList handleSortChange={handleSortChange} />
             </div>
-            {restaurantList.map((restaurant) => (
+            {filteredRestaurantList.map((restaurant) => (
               <div
                 className="flex cursor-pointer flex-col gap-1 px-6 py-8 shadow-lg sm:flex-row"
                 onClick={() => handleShowRestaurantDetail(restaurant.id)}

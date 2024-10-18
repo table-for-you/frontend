@@ -74,20 +74,22 @@ export default function Header() {
   }, [navigate, accessToken, notificationSize])
 
 
-  // const logout = () => {
-  //   try {
-  //     const res = api.get('/api/logout', {
-  //       headers: {
-  //         Authorization: `${accessToken.token}`
-  //       }
-  //     });
+  // const logout = async () => {
+  //   const config = {
+  //     headers: {
+  //       Authorization: `${accessToken.token}`,
 
-  //     console.log(res);
-  //     navigate('/');
+  //     },
+  //     // withCredentials: true, // 쿠키를 함께 전송
+  //   };
+
+  //   try {
+  //     const res = await api.get('/api/logout', config);
+  //     alert('로그아웃 돼었음')
   //   } catch (err) {
-  //     alert(JSON.stringify(err.response.data.message));
+  //     console.error(err);
   //   }
-  // }
+  // };
 
   return (
     <header
@@ -140,7 +142,7 @@ export default function Header() {
                     </span>
                   </div>
                   <div className="mt- cursor-pointer border-b p-2 text-sm hover:bg-gray-100">
-                    <p>로그아웃</p>
+                    <p onClick={logout}>로그아웃</p>
                   </div>
                   <div
                     className="mt- cursor-pointer border-b p-2 text-sm hover:bg-gray-100"
