@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import { api } from "../services/api";
+import Modal from "../components/Modal";
 
 export default function Register() {
   const {
@@ -16,10 +17,13 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [agreeChecked, setAgreeChecked] = useState(false);
+
   const [valNickname, setValNickname] = useState(null);
   const [valId, setValId] = useState(null);
 
-  const [birth, setBirth] = useState('2000-01-01');
+  const [birth, setBirth] = useState("2000-01-01");
 
   const [sendMail, setSendMail] = useState({
     send: false,
@@ -36,6 +40,18 @@ export default function Register() {
   const checkIntervalRef = useRef(null);
 
   const navigate = useNavigate();
+
+  const contentMotion = {
+    initial: { opacity: 0, y: -200 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -200 },
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 25,
+      duration: 0.5,
+    },
+  };
 
   const checkNickname = async () => {
     try {
@@ -124,7 +140,7 @@ export default function Register() {
 
   const onBirthChange = (e) => {
     setBirth(e.target.value);
-  }
+  };
 
   const signUp = async () => {
     const data = {
@@ -473,6 +489,23 @@ export default function Register() {
             <option value="OWNER">점장님</option>
           </select>
 
+          <div className="flex cursor-pointer gap-2 text-sm hover:text-blue-500 hover:underline">
+            <input
+              type="checkbox"
+              name="agree"
+              id="agree"
+              onChange={(e) => setAgreeChecked(e.target.checked)}
+            />
+            <p onClick={() => setIsModalOpen(!isModalOpen)}>
+              개인정보 활용 동의
+            </p>
+          </div>
+          {!agreeChecked && isSubmitted && (
+            <small className="text-red-500">
+              개인정보 활용 동의 후 회원가입이 가능합니다.
+            </small>
+          )}
+
           <Button
             className={`${tomatoBtn} cursor-pointer disabled:opacity-50`}
             disabled={
@@ -488,7 +521,8 @@ export default function Register() {
               errors.email ||
               errors.emailCode ||
               errors.age ||
-              watch("age") === ""
+              watch("age") === "" ||
+              !agreeChecked
             }
             onClick={signUp}
           >
@@ -496,6 +530,56 @@ export default function Register() {
           </Button>
         </form>
       </div>
+
+      <Modal
+        modalOpen={isModalOpen}
+        setModalOpen={(isOpen) => {
+          setIsModalOpen(isOpen);
+          if (!isOpen) {
+            setSelectedDate(today);
+          }
+        }}
+        contentMotion={contentMotion}
+        parentClass={
+          "fixed z-50 inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+        }
+        childClass={"relative bg-neutral-100 px-6 py-5 rounded-lg text-center"}
+      >
+        <p className="mb-3 font-bold">[개인정보 수집 및 이용 동의 안내]</p>
+        <p className="h-[55vh] overflow-y-auto">
+          이 웹사이트는 개인 포트폴리오 목적으로 제작된 사이트입니다. <br />
+          페이지에 있는 모든 데이터는{" "}
+          <span className="text-red-500">실제 정보가 아니며,</span> <br />
+          <span className="text-red-500">임의로 생성된</span> 자료입니다. <br />
+          개인정보 보호법에 의거하여 다음과 같은 내용을 고지합니다. <br />
+          <br />
+          <p className="font-bold">1. 개인정보 수집 목적</p>
+          포트폴리오 기능 이용을 위한 최소한의 정보 수집.
+          <br />
+          <br />
+          <p className="font-bold">2. 회원 가입 및 문의 응답을 위한 정보</p>
+          사이트 사용성 분석을 위한 비식별 데이터 수집 <br />
+          <br />
+          <p className="font-bold">3. 수집 항목</p>
+          이름, 이메일 주소 등 회원가입에 필요한 명시되어 있는 목록 <br />
+          <br />
+          <p className="font-bold">4. 수집 방법</p>
+          회원 가입 시 사용자가 직접 입력 <br />
+          <br />
+          <p className="font-bold">5. 개인정보의 보유 및 이용 기간</p>
+          수집일로부터 3년 동안 보관 후 자동 폐기됩니다. <br />
+          사용자가 삭제를 요청할 경우 즉시 파기합니다. <br />
+          <br />
+          <p className="font-bold">6. 개인정보 최소 수집</p>
+          개인정보 보호법에 따라 최소한의 개인정보만 수집하며, <br />
+          이는 포트폴리오 기능 구현을 위한 필수적인 정보로 한정됩니다. <br />
+          <br />
+          <p className="font-bold">7. 정보 주체의 권리</p>
+          사용자는 언제든지 자신의 개인정보에 대해 열람, 수정, 삭제를 요청할 수
+          있으며, 동의를 거부할 권리가 있습니다. <br />
+          동의하지 않을 경우 일부 서비스 이용이 제한될 수 있습니다. <br />
+        </p>
+      </Modal>
     </>
   );
 }

@@ -7,9 +7,7 @@ import PopularRegion from "../components/slide/PopularRegion";
 import Title from "../components/Title";
 import { useShowMobile } from "../hooks/useShowMobile";
 
-
 export default function Home() {
-
   const { showMobile } = useShowMobile();
   const navigate = useNavigate();
 
@@ -18,24 +16,28 @@ export default function Home() {
       <div>
         <Title />
         <div className="px-5 pt-5 md:px-14 lg:px-28 xl:px-44 2xl:px-72">
-          {showMobile ?
+          {showMobile ? (
             <div
               id="recommend"
               className="cursor-pointer hover:brightness-90"
-              onClick={() => navigate('/recommend-menu')}
+              onClick={() => navigate("/recommend-menu")}
             >
               <p>메뉴 추천</p>
-              <img src="src\assets\recommendMenuMobile.png" className="rounded-lg" />
-            </div> :
+              <img
+                src="src\assets\recommendMenuMobile.png"
+                className="rounded-lg"
+              />
+            </div>
+          ) : (
             <div
               id="recommend"
               className="cursor-pointer hover:brightness-90"
-              onClick={() => navigate('/recommend-menu')}
+              onClick={() => navigate("/recommend-menu")}
             >
               <p>메뉴 추천</p>
               <img src="src\assets\recommendMenu.png" className="rounded-lg" />
             </div>
-          }
+          )}
 
           <BlackPick />
           <PopularRegion />

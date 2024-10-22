@@ -36,7 +36,7 @@ export default function RestaurantRegister() {
     clearErrors,
     formState: { errors, isSubmitted },
   } = useForm();
-  const [selectedRegion, setSelectedRegion] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
   const [isParking, setIsParking] = useState(false);
@@ -45,12 +45,12 @@ export default function RestaurantRegister() {
   const [images, setImages] = useState([null, null, null, null]);
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
-  const [selectedFood, setSelectedFood] = useState('KOREAN');
+  const [selectedFood, setSelectedFood] = useState("KOREAN");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const regionItems = [
     { id: "SEOUL", name: "서울" },
-    { id: "JEJU", name: "제주도" },
+    { id: "JEJU", name: "제주" },
     { id: "CHUNGNAM", name: "충남" },
     { id: "INCHEON", name: "인천" },
     { id: "DAEGU", name: "대구" },
@@ -132,7 +132,6 @@ export default function RestaurantRegister() {
   };
 
   const onSubmit = async () => {
-
     const formData = new FormData();
     const data = {
       name: watch("title"),
@@ -152,14 +151,16 @@ export default function RestaurantRegister() {
       formData.append("mainImage", mainImage[0].file);
     }
 
-
     // 서브 이미지 추가
     images.forEach((image, index) => {
       if (image) {
         formData.append("subImages", image.file); // subImages 배열에 이미지 추가
       }
     });
-    formData.append('dto', new Blob([JSON.stringify(data)], { type: 'application/json' }));
+    formData.append(
+      "dto",
+      new Blob([JSON.stringify(data)], { type: "application/json" }),
+    );
     const config = {
       headers: {
         // "Content-Type": "multipart/form-data",
@@ -174,7 +175,6 @@ export default function RestaurantRegister() {
       }
     } catch (err) {
       console.error(err);
-
     }
   };
 
@@ -357,7 +357,7 @@ export default function RestaurantRegister() {
                 if (newImages.some((img) => img === null)) {
                   setError("mainImage");
                 } else {
-                  clearErrors('mainImage');
+                  clearErrors("mainImage");
                 }
               }}
             />
@@ -375,7 +375,7 @@ export default function RestaurantRegister() {
                 if (newImages.some((img) => img === null)) {
                   setError("images");
                 } else {
-                  clearErrors('images');
+                  clearErrors("images");
                 }
               }}
             />
@@ -402,7 +402,7 @@ export default function RestaurantRegister() {
               <option value="WESTERN">양식</option>
             </select>
 
-            <label htmlFor="seat">좌석</label>
+            <label htmlFor="seat">테이블</label>
             <input
               type="number"
               id="seat"
@@ -410,10 +410,10 @@ export default function RestaurantRegister() {
               className={`${inputStyle}`}
               placeholder="1"
               {...register("seat", {
-                required: "좌석을 입력해주세요",
+                required: "테이블을 입력해주세요",
                 min: {
                   value: 1,
-                  message: "좌석 수는 최소 1 이상이어야 합니다.",
+                  message: "테이블 수는 최소 1 이상이어야 합니다.",
                 },
               })}
             />
@@ -486,4 +486,3 @@ export default function RestaurantRegister() {
     </>
   );
 }
-

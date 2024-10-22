@@ -16,7 +16,9 @@ export const tokenSlice = createSlice({
       state.authenticated = true;
       state.accessToken = action.payload;
       state.expireTime = new Date().getTime() + TOKEN_TIME_OUT;
-      state.nickname = action.payload.nickname;
+      if (action.payload.nickname) {
+        state.nickname = action.payload.nickname;
+      }
     },
     DELETE_TOKEN: (state) => {
       // 값 모두 초기화 => access 토큰 정보 삭제

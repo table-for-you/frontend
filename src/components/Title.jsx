@@ -13,7 +13,6 @@ import SearchUserCount from "./search/SearchUserCount";
 import { useShowMobile } from "../hooks/useShowMobile";
 import { useNavigate } from "react-router-dom";
 
-
 export default function Title() {
   const dispatch = useDispatch();
   const { ref, inView } = useInView({
@@ -56,15 +55,17 @@ export default function Title() {
 
   const handleTypeChange = (e) => {
     setSearchType(e.target.value);
-  }
+  };
 
   const search = (type, searchInputValue) => {
     if (!searchInputValue.trim()) {
       alert("검색어를 입력해 주세요.");
       return;
     }
-    navigate(`/restaurant/${searchInputValue}/`, { state: { searchType: type } })
-  }
+    navigate(`/restaurant/${searchInputValue}/`, {
+      state: { searchType: type },
+    });
+  };
 
   return (
     <div className="relative h-[100vh]">
@@ -101,7 +102,6 @@ export default function Title() {
                 setSearchInputValue={setSearchInputValue}
                 onSearch={() => search(searchType, searchInputValue)}
               />
-              {/* <SearchCalendar /> */}
               <SearchType handleTypeChange={(e) => handleTypeChange(e)} />
               <SearchUserCount />
               <Button
@@ -152,7 +152,6 @@ export default function Title() {
           </div>
 
           <div className="mt-4 rounded-lg bg-white p-8 shadow-lg">
-            {/* <SearchCalendar /> */}
             <SearchType handleTypeChange={(e) => handleTypeChange(e)} />
           </div>
 
@@ -162,7 +161,9 @@ export default function Title() {
           <Button
             style={`${tomatoBtn}`}
             onClick={() => search(searchType, searchInputValue)}
-          >검색</Button>
+          >
+            검색
+          </Button>
         </div>
       </Modal>
     </div>

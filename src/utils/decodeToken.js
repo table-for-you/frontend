@@ -14,5 +14,3 @@ export function decodeToken(token) {
     return null;
   }
 }
-
-// 뭔지 분석하기 atob? 한줄한줄

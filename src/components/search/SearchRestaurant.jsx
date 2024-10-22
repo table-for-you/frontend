@@ -2,7 +2,11 @@ import { useState } from "react";
 import { inputStyle } from "../../constants/style";
 import SearchRank from "./SearchRank";
 
-export default function SearchRestaurant({ searchInputValue, setSearchInputValue, onSearch }) {
+export default function SearchRestaurant({
+  searchInputValue,
+  setSearchInputValue,
+  onSearch,
+}) {
   const [showRank, setShowRank] = useState(false);
 
   const handleSelectRegion = (region) => {
@@ -16,8 +20,8 @@ export default function SearchRestaurant({ searchInputValue, setSearchInputValue
 
   const handleKeyDown = (e) => {
     // 엔터키 입력 감지
-    if (e.key === 'Enter') {
-      onSearch();  // 엔터키 입력 시 검색 함수 호출
+    if (e.key === "Enter") {
+      onSearch(); // 엔터키 입력 시 검색 함수 호출
     }
   };
 

@@ -3,7 +3,7 @@ import dayGridPlugin from "@fullcalendar/daygrid"; // dayGrid 뷰 플러그인
 import timeGridPlugin from "@fullcalendar/timegrid"; // timeGrid 뷰 플러그인
 import interactionPlugin from "@fullcalendar/interaction"; // 이벤트 드래그 & 드롭 등을 위한 플러그인
 import koLocale from "@fullcalendar/core/locales/ko";
-import bootstrapPlugin from '@fullcalendar/bootstrap';
+import bootstrapPlugin from "@fullcalendar/bootstrap";
 
 export default function Calendar({ onDateClick }) {
   const offset = 1000 * 60 * 60 * 9;
@@ -12,7 +12,7 @@ export default function Calendar({ onDateClick }) {
   const todayStr = koreaNow.toISOString().split("T")[0];
   const oneWeekLater = new Date(koreaNow);
   oneWeekLater.setDate(koreaNow.getDate() + 7);
-  const oneWeekLaterStr = oneWeekLater.toISOString().split('T')[0];
+  const oneWeekLaterStr = oneWeekLater.toISOString().split("T")[0];
 
   const dayCellClassNames = ({ date }) => {
     const day = date.getDay(); // 요일을 숫자로 반환 (일요일: 0, 월요일: 1, ..., 토요일: 6)
@@ -25,7 +25,12 @@ export default function Calendar({ onDateClick }) {
   };
   return (
     <FullCalendar
-      plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, bootstrapPlugin]} // 사용할 플러그인 배열
+      plugins={[
+        dayGridPlugin,
+        timeGridPlugin,
+        interactionPlugin,
+        bootstrapPlugin,
+      ]} // 사용할 플러그인 배열
       initialView="dayGridWeek" // 초기 뷰 설정
       editable={true} // 이벤트 드래그 & 드롭 가능 여부
       selectable={true} // 날짜 선택 가능 여부
@@ -35,10 +40,10 @@ export default function Calendar({ onDateClick }) {
       dayCellClassNames={dayCellClassNames}
       validRange={{
         start: todayStr,
-        end: oneWeekLaterStr
+        end: oneWeekLaterStr,
       }}
       contentHeight={120}
       titleFormat={{ year: "numeric", month: "long" }}
-    /> //지역 순위 클릭
+    />
   );
 }

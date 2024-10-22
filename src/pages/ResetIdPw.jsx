@@ -16,9 +16,8 @@ export default function ResetIdPw() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isIdModalOpen, setIsIdModalOpen] = useState(false);
   const [isPwModalOpen, setIsPwModalOpen] = useState(false);
-  const [notFoundId, setNotFoundId] = useState('');
+  const [notFoundId, setNotFoundId] = useState("");
   const [yourId, setYourId] = useState(null);
-
 
   const contentMotion = {
     initial: { opacity: 0, y: -200 },
@@ -36,12 +35,12 @@ export default function ResetIdPw() {
 
   const findId = async () => {
     const params = {
-      email: watch('findIdEmail')
-    }
+      email: watch("findIdEmail"),
+    };
 
     const config = {
-      params: params
-    }
+      params: params,
+    };
 
     try {
       const res = await api.get(`/api/find-id`, config);
@@ -51,7 +50,7 @@ export default function ResetIdPw() {
     } catch (err) {
       setNotFoundId(err.response.data.message);
     }
-  }
+  };
 
   const findPass = async () => {
     const email = watch("email");
@@ -74,11 +73,11 @@ export default function ResetIdPw() {
         <form
           onSubmit={(e) => e.preventDefault()}
           // className="sm:w-1/2 lg:w-1/3 xl:w-1/4"
-          className="flex flex-col sm:flex-row gap-10"
+          className="flex flex-col gap-10 sm:flex-row"
         >
           <div>
             <p className="text-lg font-bold">아이디 찾기</p>
-            <p className="text-sm text-gray-400 mb-2">
+            <p className="mb-2 text-sm text-gray-400">
               회원가입 시 등록한 이메일 주소를 입력해 주세요.
             </p>
             <div className="flex flex-col">
@@ -204,8 +203,8 @@ export default function ResetIdPw() {
         contentMotion={contentMotion}
       >
         <div className="mb-2 flex flex-grow flex-col items-center justify-center">
-          <p className="pb-6 sm:text-lg">{watch('findIdEmail')}의 아이디</p>
-          <p className="bg-green-100 p-1 mb-1">{yourId}</p>
+          <p className="pb-6 sm:text-lg">{watch("findIdEmail")}의 아이디</p>
+          <p className="mb-1 bg-green-100 p-1">{yourId}</p>
         </div>
         <div className="mt-auto w-full">
           <Button

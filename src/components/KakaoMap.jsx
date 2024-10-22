@@ -15,8 +15,8 @@ export default function KakaoMap({ size }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalRestaurantInfo, setModalRestaurantInfo] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [searchInputValue, setSearchInputValue] = useState('');
-  const [searchSelected, setSearchSelected] = useState('location');
+  const [searchInputValue, setSearchInputValue] = useState("");
+  const [searchSelected, setSearchSelected] = useState("location");
   const [markers, setMarkers] = useState([]); // 마커 리스트 저장
 
   const navigate = useNavigate();
@@ -34,40 +34,38 @@ export default function KakaoMap({ size }) {
   };
 
   const foodTypeMap = {
-    'KOREAN': '한식',
-    'CHINESE': '중식',
-    'JAPANESE': '일식',
-    'WESTERN': '양식'
+    KOREAN: "한식",
+    CHINESE: "중식",
+    JAPANESE: "일식",
+    WESTERN: "양식",
   };
 
   const regionMap = {
-    "서울": "SEOUL",
-    "제주도": "JEJU",
-    "충남": "CHUNGNAM",
-    "인천": "INCHEON",
-    "대구": "DAEGU",
-    "대전": "DAEJEON",
-    "경기": "GYEONGGI",
-    "경남": "GYEONGNAM",
-    "부산": "BUSAN",
-    "전북": "JEONBUK",
-    "울산": "ULSAN",
-    "광주": "GWANGJU",
-    "강원": "GANGWON",
-    "경북": "GYEONGBUK",
-    "전남": "JEONNAM",
-    "충북": "CHUNGBUK",
-    "세종": "SEJONG",
+    서울: "SEOUL",
+    제주: "JEJU",
+    충남: "CHUNGNAM",
+    인천: "INCHEON",
+    대구: "DAEGU",
+    대전: "DAEJEON",
+    경기: "GYEONGGI",
+    경남: "GYEONGNAM",
+    부산: "BUSAN",
+    전북: "JEONBUK",
+    울산: "ULSAN",
+    광주: "GWANGJU",
+    강원: "GANGWON",
+    경북: "GYEONGBUK",
+    전남: "JEONNAM",
+    충북: "CHUNGBUK",
+    세종: "SEJONG",
   };
-
 
   const foodSearchMap = {
-    '한식': 'KOREAN',
-    '중식': 'CHINESE',
-    '일식': 'JAPANESE',
-    '양식': 'WESTERN'
+    한식: "KOREAN",
+    중식: "CHINESE",
+    일식: "JAPANESE",
+    양식: "WESTERN",
   };
-
 
   useEffect(() => {
     const container = document.getElementById("map"); // 지도 담을 영역 DOM 래퍼런스
@@ -84,9 +82,9 @@ export default function KakaoMap({ size }) {
   }, []);
 
   const clearMarkers = () => {
-    markers.forEach(marker => marker.setMap(null));
+    markers.forEach((marker) => marker.setMap(null));
     setMarkers([]);
-  }
+  };
 
   const createMarkers = (restaurantList) => {
     clearMarkers();
@@ -94,7 +92,10 @@ export default function KakaoMap({ size }) {
     const newMarkers = [];
 
     restaurantList.forEach((restaurant) => {
-      const markerPosition = new kakao.maps.LatLng(restaurant.latitude, restaurant.longitude);
+      const markerPosition = new kakao.maps.LatLng(
+        restaurant.latitude,
+        restaurant.longitude,
+      );
       const marker = new kakao.maps.Marker({
         position: markerPosition,
       });
@@ -119,8 +120,7 @@ export default function KakaoMap({ size }) {
       });
 
       kakao.maps.event.addListener(marker, "click", () => {
-        getModalRestaurant(restaurant.name),
-          setIsModalOpen(true);
+        getModalRestaurant(restaurant.id), setIsModalOpen(true);
       });
 
       newMarkers.push(marker); // 생성된 마커 배열에 추가
@@ -129,40 +129,31 @@ export default function KakaoMap({ size }) {
     setMarkers(newMarkers); // 마커 배열 업데이트
   };
 
-
   const getRestaurant = async () => {
     try {
       const params = {
         type: "region",
-        "search-keyword": "SEOUL"
-      }
+        "search-keyword": "SEOUL",
+      };
 
-      const res = await api.get('/public/restaurants', { params });
+      const res = await api.get("/public/restaurants", { params });
       setRestaurantList(res.data.content);
       createMarkers(res.data.content);
     } catch (err) {
       console.error(err);
     }
-  }
+  };
 
-
-
-  const getModalRestaurant = async (name) => {
+  const getModalRestaurant = async (restaurantId) => {
     try {
-      const params = {
-        type: "restaurant",
-        "search-keyword": name
-      }
-
-      const res = await api.get('/public/restaurants', { params });
-      setModalRestaurantInfo(res.data.content[0]);
+      const res = await api.get(`/public/restaurants/${restaurantId}`);
+      setModalRestaurantInfo(res.data);
     } catch (err) {
       console.error(err);
     } finally {
       setIsLoading(false);
     }
-  }
-
+  };
 
   const getSearchRestaurant = async (inputValue, selected) => {
     let searchValue = inputValue;
@@ -175,28 +166,27 @@ export default function KakaoMap({ size }) {
       searchValue = foodSearchMap[searchValue];
     }
 
-
     try {
       const params = {
         type: selected,
-        "search-keyword": searchValue
-      }
+        "search-keyword": searchValue,
+      };
 
-      const res = await api.get('/public/restaurants', { params });
+      const res = await api.get("/public/restaurants", { params });
       setRestaurantList(res.data.content);
       createMarkers(res.data.content);
     } catch (err) {
       console.error(err);
     }
-  }
+  };
 
   const handleInputChange = (e) => {
     setSearchInputValue(e.target.value);
-  }
+  };
 
   const handleSelectChange = (e) => {
     setSearchSelected(e.target.value);
-  }
+  };
 
   useEffect(() => {
     getRestaurant(); // 페이지 최초 로드 시 getRestaurant 호출
@@ -233,23 +223,23 @@ export default function KakaoMap({ size }) {
       >
         add
       </span>
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 -translate-y-2 z-50 opacity-80">
-        <div className="flex items-center space-x-2 p-3 bg-white shadow-md rounded-lg text-sm">
+      <div className="absolute left-1/2 top-4 z-50 -translate-x-1/2 -translate-y-2 opacity-80">
+        <div className="flex items-center space-x-2 rounded-lg bg-white p-3 text-sm shadow-md">
           <input
             type="text"
             value={searchInputValue}
             onChange={handleInputChange}
             placeholder="서울"
-            className="border border-gray-300 rounded-md px-1 py-1  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="rounded-md border border-gray-300 px-1 py-1 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 getSearchRestaurant(searchInputValue, searchSelected);
               }
             }}
           />
           <select
             onChange={handleSelectChange}
-            className="border border-gray-300 rounded-md px-1 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="rounded-md border border-gray-300 px-1 py-1 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="location">주소</option>
             <option value="region">지역</option>
@@ -257,8 +247,10 @@ export default function KakaoMap({ size }) {
             <option value="food">종류</option>
           </select>
           <span
-            className="material-symbols-outlined bg-blue-500 text-white cursor-pointer p-0.5 rounded-md hover:bg-blue-600 transition duration-200"
-            onClick={() => getSearchRestaurant(searchInputValue, searchSelected)}
+            className="material-symbols-outlined cursor-pointer rounded-md bg-blue-500 p-0.5 text-white transition duration-200 hover:bg-blue-600"
+            onClick={() =>
+              getSearchRestaurant(searchInputValue, searchSelected)
+            }
           >
             search
           </span>
@@ -267,46 +259,50 @@ export default function KakaoMap({ size }) {
       <Modal
         modalOpen={isModalOpen}
         setModalOpen={setIsModalOpen}
-        parentClass={
-          "absolute inset-0 z-50 bg-black bg-opacity-50"
-        }
+        parentClass={"absolute inset-0 z-50 bg-black bg-opacity-50"}
         childClass={
           "relative z-50 h-full w-[80%] bg-neutral-100 md:w-[30%] pt-12 bg-white shadow-md"
         }
         contentMotion={contentMotion}
       >
-        {isLoading ?
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-2">
+        {isLoading ? (
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-2">
             <BarLoader color="#ff0000" />
           </div>
-          :
+        ) : (
           <div>
             <img src={modalRestaurantInfo.mainImage} />
-            <div className="flex flex-col sm:ml-5 text-lg gap-1.5 mt-2">
+            <div className="mt-2 flex flex-col gap-1.5 text-lg sm:ml-5">
               <div className="flex items-center gap-1 font-bold">
                 <span>{modalRestaurantInfo.name}</span>
-                <span className="text-xs opacity-50">{foodTypeMap[modalRestaurantInfo.foodType]}</span>
+                <span className="text-xs opacity-50">
+                  {foodTypeMap[modalRestaurantInfo.foodType]}
+                </span>
               </div>
               <p className="text-xs">{modalRestaurantInfo.location}</p>
-              <Rating rating={modalRestaurantInfo.rating} ratingNum={modalRestaurantInfo.ratingNum} />
+              <Rating
+                rating={modalRestaurantInfo.rating}
+                ratingNum={modalRestaurantInfo.ratingNum}
+              />
               <span className="text-sm opacity-50">
                 {modalRestaurantInfo.parking && (
-                  <span className="text-xs bg-neutral-200 opacity-75 p-1 rounded-lg">
+                  <span className="rounded-lg bg-neutral-200 p-1 text-xs opacity-75">
                     주차 가능
                   </span>
                 )}
               </span>
             </div>
           </div>
-        }
+        )}
         <Button
           className={`${tomatoBtn} absolute bottom-3 right-5`}
-          onClick={() => navigate(`/restaurant/location/details/${modalRestaurantInfo.id}`)}
+          onClick={() =>
+            navigate(`/restaurant/location/details/${modalRestaurantInfo.id}`)
+          }
         >
           예약하기
         </Button>
       </Modal>
-
     </div>
   );
 }

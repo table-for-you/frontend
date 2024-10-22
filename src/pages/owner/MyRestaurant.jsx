@@ -47,15 +47,18 @@ export default function MyRestaurant() {
     };
 
     try {
-      const res = await api.delete(`/owner/restaurants/${restaurantId}`, config);
+      const res = await api.delete(
+        `/owner/restaurants/${restaurantId}`,
+        config,
+      );
       alert(JSON.stringify(res.data.response));
-      setMyRestaurant((prevRestaurants) => (
-        prevRestaurants.filter((restaurant) => restaurant.id !== restaurantId)
-      ))
+      setMyRestaurant((prevRestaurants) =>
+        prevRestaurants.filter((restaurant) => restaurant.id !== restaurantId),
+      );
     } catch (err) {
       console.error(err);
     }
-  }
+  };
 
   return (
     <div className="px-5 pt-5 md:px-14 lg:px-28 xl:px-44 2xl:px-72">
@@ -65,37 +68,44 @@ export default function MyRestaurant() {
           myRestaurant.map((restaurant) => (
             <div
               key={restaurant.id}
-              className="rounded-lg bg-neutral-100 p-6 shadow-md flex flex-col"
+              className="flex flex-col rounded-lg bg-neutral-100 p-6 shadow-md"
             >
               <p className="text-lg">{restaurant.name}</p>
-              <div className="flex gap-1 mt-1 text-sm">
+              <div className="mt-1 flex gap-1 text-sm">
                 <Button
                   className={tomatoBtn}
-                  style={'p-2'}
-                  onClick={() => navigate(`/owner/update-restaurant/${restaurant.id}`)}
+                  style={"p-2"}
+                  onClick={() =>
+                    navigate(`/owner/update-restaurant/${restaurant.id}`)
+                  }
                 >
                   가게 업데이트
                 </Button>
                 <Button
                   className={tomatoBtn}
-                  style={'p-2'}
-                  onClick={() => navigate(`/owner/menu-manage/${restaurant.id}`)}
+                  style={"p-2"}
+                  onClick={() =>
+                    navigate(`/owner/menu-manage/${restaurant.id}`)
+                  }
                 >
                   메뉴 관리
                 </Button>
                 <Button
                   className={tomatoBtn}
-                  style={'p-2'}
-                  onClick={() => navigate(`/owner/reservations-manage/${restaurant.id}`)}
+                  style={"p-2"}
+                  onClick={() =>
+                    navigate(`/owner/reservations-manage/${restaurant.id}`)
+                  }
                 >
                   예약 관리
                 </Button>
-                <Button onClick={() => {
-                  if (confirm('정말로 가게를 삭제하시겠습니까?')) {
-                    deleteRestaurant(restaurant.id)
-                  }
-                }
-                }>
+                <Button
+                  onClick={() => {
+                    if (confirm("정말로 가게를 삭제하시겠습니까?")) {
+                      deleteRestaurant(restaurant.id);
+                    }
+                  }}
+                >
                   가게 삭제
                 </Button>
               </div>

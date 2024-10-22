@@ -7,6 +7,7 @@ import { api } from "../services/api";
 import Modal from "./Modal";
 import { useShowMobile } from "../hooks/useShowMobile";
 import { decodeToken } from "../utils/decodeToken";
+import { DELETE_TOKEN } from "../store/auth";
 
 export default function Header() {
   const [menuBar, setMenuBar] = useState(false);
@@ -16,8 +17,8 @@ export default function Header() {
   const { authenticated, nickname, accessToken } = useSelector(
     (state) => state.authToken,
   );
+  const dispatch = useDispatch();
   const [token, setToken] = useState(null);
-
   const inView = useSelector((state) => state.inView);
 
   const location = useLocation();
@@ -67,29 +68,28 @@ export default function Header() {
         alert("권한이 없습니다.");
         navigate("/");
       }
-    }
+    };
     if (accessToken) {
       getNotificationsSize();
     }
-  }, [navigate, accessToken, notificationSize])
+  }, [navigate, accessToken, notificationSize]);
 
+  const logout = async () => {
+    const config = {
+      headers: {
+        Authorization: `${accessToken.token}`,
+      },
+      withCredentials: true,
+    };
 
-  // const logout = async () => {
-  //   const config = {
-  //     headers: {
-  //       Authorization: `${accessToken.token}`,
-
-  //     },
-  //     // withCredentials: true, // 쿠키를 함께 전송
-  //   };
-
-  //   try {
-  //     const res = await api.get('/api/logout', config);
-  //     alert('로그아웃 돼었음')
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
+    try {
+      const res = await api.get("/api/logout", config);
+      dispatch(DELETE_TOKEN());
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <header
@@ -119,7 +119,7 @@ export default function Header() {
                   <span className="text-sm">{nickname}</span>
                   <span className="material-symbols-outlined">menu</span>
                 </div>
-                <div className="bg-white rounded-lg relative border-[2px]">
+                <div className="relative rounded-lg border-[2px] bg-white">
                   <span
                     className="material-symbols-outlined cursor-pointer p-2"
                     onClick={() => navigate("/notifications")}
@@ -127,7 +127,7 @@ export default function Header() {
                     notifications
                   </span>
 
-                  <span className="text-xs px-1 bg-tomato-color text-white rounded-full absolute -right-1.5 -top-1.5">
+                  <span className="absolute -right-1.5 -top-1.5 rounded-full bg-tomato-color px-1 text-xs text-white">
                     {notificationSize}
                   </span>
                 </div>
@@ -136,7 +136,9 @@ export default function Header() {
               {menuBar && (
                 <div className="absolute h-auto w-[15vw] rounded-lg bg-white shadow-md">
                   <div className="flex cursor-pointer items-center justify-between border-b p-2 text-sm hover:bg-gray-100">
-                    <p>{nickname}님 반가워요👋</p>
+                    <p>
+                      {nickname}님 <br></br>반가워요👋
+                    </p>
                     <span className="material-symbols-outlined cursor-pointer">
                       arrow_circle_right
                     </span>
@@ -147,8 +149,7 @@ export default function Header() {
                   <div
                     className="mt- cursor-pointer border-b p-2 text-sm hover:bg-gray-100"
                     onClick={() => {
-                      navigate("/mypage"),
-                        setMenuBar(false);
+                      navigate("/mypage"), setMenuBar(false);
                     }}
                   >
                     <p>마이 페이지</p>
@@ -156,8 +157,7 @@ export default function Header() {
                   <div
                     className="mt- cursor-pointer border-b p-2 text-sm hover:bg-gray-100"
                     onClick={() => {
-                      navigate("/visited-restaurants"),
-                        setMenuBar(false);
+                      navigate("/visited-restaurants"), setMenuBar(false);
                     }}
                   >
                     <p>방문한 식당</p>
@@ -198,8 +198,7 @@ export default function Header() {
                       <div
                         className="mt- cursor-pointer border-b p-2 text-sm hover:bg-gray-100"
                         onClick={() => {
-                          navigate("admin/user/manage"),
-                            setMenuBar(false);
+                          navigate("admin/user/manage"), setMenuBar(false);
                         }}
                       >
                         <p>회원 관리</p>
@@ -221,14 +220,14 @@ export default function Header() {
           <>
             <div className="flex items-center gap-3">
               {authenticated && (
-                <div className="bg-white rounded-lg relative border-[2px]">
+                <div className="relative rounded-lg border-[2px] bg-white">
                   <span
                     className="material-symbols-outlined cursor-pointer p-[0.42rem]"
                     onClick={() => navigate("/notifications")}
                   >
                     notifications
                   </span>
-                  <span className="text-xs px-1 bg-tomato-color text-white rounded-full absolute -right-1.5 -top-1.5">
+                  <span className="absolute -right-1.5 -top-1.5 rounded-full bg-tomato-color px-1 text-xs text-white">
                     {notificationSize}
                   </span>
                 </div>
@@ -260,6 +259,7 @@ export default function Header() {
                     <Button
                       onClick={() => {
                         setIsModalOpen(false);
+                        logout;
                       }}
                       style={`${tomatoBtn} w-full`}
                     >
@@ -267,8 +267,7 @@ export default function Header() {
                     </Button>
                     <Button
                       onClick={() => {
-                        navigate("/mypage"),
-                          setIsModalOpen(false);
+                        navigate("/mypage"), setIsModalOpen(false);
                       }}
                       style={`${tomatoBtn} w-full`}
                     >
@@ -276,8 +275,7 @@ export default function Header() {
                     </Button>
                     <Button
                       onClick={() => {
-                        navigate("/visited-restaurants"),
-                          setIsModalOpen(false);
+                        navigate("/visited-restaurants"), setIsModalOpen(false);
                       }}
                       style={`${tomatoBtn} w-full`}
                     >
@@ -328,7 +326,6 @@ export default function Header() {
                           회원 관리
                         </Button>
                       </>
-
                     )}
                   </div>
                 ) : (

@@ -17,11 +17,11 @@ export default function RestaurantDetails() {
   const navigate = useNavigate();
 
   const foodTypeMap = {
-    'KOREAN': '한식',
-    'CHINESE': '중식',
-    'JAPANESE': '일식',
-    'WESTERN': '양식'
-  }
+    KOREAN: "한식",
+    CHINESE: "중식",
+    JAPANESE: "일식",
+    WESTERN: "양식",
+  };
 
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
@@ -33,7 +33,7 @@ export default function RestaurantDetails() {
               Authorization: `${accessToken.token}`,
             },
           };
-          
+
           try {
             const res = await api.get(
               `/admin/pending-restaurants/${restaurantId}`,
@@ -62,7 +62,6 @@ export default function RestaurantDetails() {
       },
     };
 
-
     try {
       const res = await api.patch(
         `/admin/restaurants/${restaurantId}?status=APPROVED`,
@@ -83,7 +82,6 @@ export default function RestaurantDetails() {
       },
     };
 
-
     try {
       const res = await api.patch(
         `/admin/restaurants/${restaurantId}?status=REJECT`,
@@ -99,57 +97,47 @@ export default function RestaurantDetails() {
 
   return (
     <div className="px-5 pt-5 md:px-14 lg:px-28 xl:px-44 2xl:px-72">
-      {isLoading ?
-        <Loading /> :
+      {isLoading ? (
+        <Loading />
+      ) : (
         <div>
-          <RestaurantSlider mainImage={restaurantDetails.mainImage} subImages={restaurantDetails.subImages} />
+          <RestaurantSlider
+            mainImage={restaurantDetails.mainImage}
+            subImages={restaurantDetails.subImages}
+          />
           <div className="flex flex-col gap-1">
             <span className="text-sm opacity-50">
               {foodTypeMap[restaurantDetails.foodType]}
             </span>
-            <span className="text-lg font-bold">
-              {restaurantDetails.name}
-            </span>
+            <span className="text-lg font-bold">{restaurantDetails.name}</span>
             {/* <LikeCount likeCount={restaurantDetails.likeCount} /> */}
             {/* <Rating rating={restaurantDetails.rating} /> */}
-            <div className="mt-2 flex flex-col text-sm gap-1">
+            <div className="mt-2 flex flex-col gap-1 text-sm">
               <div className="flex items-center gap-1">
-                <span className="material-symbols-outlined">
-                  map
-                </span>
-                <span>
-                  {restaurantDetails.location}
-                </span>
+                <span className="material-symbols-outlined">map</span>
+                <span>{restaurantDetails.location}</span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="material-symbols-outlined">
-                  schedule
-                </span>
-                <span>
-                  {restaurantDetails.time}
-                </span>
+                <span className="material-symbols-outlined">schedule</span>
+                <span>{restaurantDetails.time}</span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="material-symbols-outlined">
-                  call
-                </span>
-                <span>
-                  {restaurantDetails.tel}
-                </span>
+                <span className="material-symbols-outlined">call</span>
+                <span>{restaurantDetails.tel}</span>
               </div>
             </div>
             <div className="mb-2">
               {restaurantDetails.parking && (
-                <span className="text-xs bg-neutral-200 opacity-50 px-1 py-0.5 rounded-lg">
+                <span className="rounded-lg bg-neutral-200 px-1 py-0.5 text-xs opacity-50">
                   주차 가능
                 </span>
               )}
             </div>
-            <div className="text-sm text-ellipsis ">
+            <div className="text-ellipsis text-sm">
               <p>{restaurantDetails.description}</p>
             </div>
           </div>
-          <div className="flex justify-end gap-3 mt-3">
+          <div className="mt-3 flex justify-end gap-3">
             <Button
               onClick={approveRestaurant}
               className={`${tomatoBtn} px-4 py-2`}
@@ -159,7 +147,7 @@ export default function RestaurantDetails() {
             <Button onClick={rejectRestaurant}>거절하기</Button>
           </div>
         </div>
-      }
+      )}
     </div>
   );
 }

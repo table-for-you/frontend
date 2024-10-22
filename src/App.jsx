@@ -24,10 +24,50 @@ import UserDetails from "./pages/admin/UserDetails";
 import MyPage from "./pages/MyPage";
 import VisitedRestaurant from "./pages/VisitedRestaurant";
 import RecommendMenu from "./pages/RecommendMenu";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import {
+  onMessageListener,
+  requestForToken,
+  sendTokenToServer,
+} from "./firebase";
 
 function App() {
+  const { accessToken } = useSelector((state) => state.authToken);
+
+  const requestNotificationPermission = async () => {
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        requestForToken().then((token) => {
+          if (token) {
+            sendTokenToServer(token, accessToken);
+          }
+        });
+      } else {
+        console.log("알림 권한이 거부되었습니다.");
+      }
+    } catch (error) {
+      console.error("알림 권한 요청 중 오류 발생:", error);
+    }
+  };
+
+  useEffect(() => {
+    requestNotificationPermission();
+
+    onMessageListener()
+      .then((payload) => {
+        if (Notification.permission === "granted") {
+          new Notification(payload.notification.title, {
+            body: payload.notification.body,
+            icon: "/fcmIcon.png", // 알림 아이콘 경로
+          });
+        }
+      })
+      .catch((err) => console.error("Error receiving message: ", err));
+  }, [accessToken]);
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex min-h-screen flex-col">
       <BrowserRouter>
         <Header />
         <div className="flex-grow">
@@ -40,13 +80,15 @@ function App() {
             <Route path="/reset-idpw" element={<ResetIdPw />}></Route>
             <Route path="/restaurant/:name" element={<Restaurant />}></Route>
             <Route path="/mypage" element={<MyPage />}></Route>
-            <Route path="/visited-restaurants" element={<VisitedRestaurant />}></Route>
+            <Route
+              path="/visited-restaurants"
+              element={<VisitedRestaurant />}
+            ></Route>
             <Route
               path="/restaurant/:name/details/:restaurantId"
               element={<RestaurantDetail />}
             />
             <Route path="*" element={<NotFound />}></Route>
-
 
             <Route
               path="/owner/restaurant/register"
@@ -54,22 +96,17 @@ function App() {
             ></Route>
             <Route
               path="/owner/my-restaurant"
-              element={<MyRestaurant />}>
-            </Route>
+              element={<MyRestaurant />}
+            ></Route>
             <Route
               path="/owner/reject-restaurant"
               element={<RejectRestaurant />}
-            >
-            </Route>
+            ></Route>
             <Route
               path="/owner/update-restaurant/:restaurantId"
               element={<UpdateRestaurant />}
-            >
-            </Route>
-            <Route
-              path="/notifications"
-              element={<Notifications />}
             ></Route>
+            <Route path="/notifications" element={<Notifications />}></Route>
             <Route
               path="/notifications/detail/:notificationId"
               element={<DetailNotifications />}
@@ -80,13 +117,11 @@ function App() {
             ></Route>
             <Route
               path="/owner/menu-manage/:restaurantId/update/:menuId"
-              element={<MenuUpdate />
-              }
+              element={<MenuUpdate />}
             ></Route>
             <Route
               path="/owner/reservations-manage/:restaurantId/"
-              element={<ReservationsManage />
-              }
+              element={<ReservationsManage />}
             ></Route>
 
             <Route
@@ -97,10 +132,7 @@ function App() {
               path="/admin/restaurant/manage/detail/:restaurantId"
               element={<RestaurantDetails />}
             ></Route>
-            <Route
-              path="admin/user/manage"
-              element={<UserManage />}
-            ></Route>
+            <Route path="admin/user/manage" element={<UserManage />}></Route>
             <Route
               path="/admin/user/manage/detail/:userId"
               element={<UserDetails />}

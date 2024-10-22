@@ -30,7 +30,7 @@ export default function Login() {
       headers: { "Content-Type": "application/json" },
       withCredentials: true,
     };
-    // 쿠키 추후 (why? https 설정 문제로 인해)
+
     try {
       const res = await api.post("/api/login", data, config);
 
