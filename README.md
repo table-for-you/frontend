@@ -23,7 +23,7 @@
 |:------:|:------:|
 | <img src="https://github.com/user-attachments/assets/8de6cd4e-b770-4fcc-b084-82d1259d3b96" alt="김현수" width="150"> | <img src="https://github.com/user-attachments/assets/8f8a5c92-e501-45c3-ab01-bbb31ab57f34" alt="박대영" width="150"> |
 | FE | BE |
-| [GitHub](https://github.com/LDK1009) | [GitHub](https://github.com/rlagustn805) | [GitHub](https://github.com/DaeYoung0726) |
+| [GitHub](https://github.com/rlagustn805) | [GitHub](https://github.com/DaeYoung0726) |
 <br/>
 <br/>
 
