@@ -7,7 +7,8 @@
 
 # 0. 배포 사이트 
 [서비스 링크](https://table-for-you.com/)
-[REST API - 스웨](https://api.table-for-you.com/swagger-ui/index.html)
+<br/><br/>
+[REST API - 스웨거](https://api.table-for-you.com/swagger-ui/index.html)
 
 
 <br/>
