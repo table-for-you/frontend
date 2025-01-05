@@ -6,10 +6,9 @@
 <br/>
 
 # 0. 배포 사이트 
-[서비스 링크](https://table-for-you.com/)
+<a href="https://table-for-you.com/" target="_blank">서비스 링크</a>
 <br/><br/>
-[REST API - 스웨거](https://api.table-for-you.com/swagger-ui/index.html)
-
+<a href="https://api.table-for-you.com/swagger-ui/index.html" target="_blank">REST API - 스웨거</a>
 
 <br/>
 <br/>
@@ -17,6 +16,7 @@
 # 1. Project Overview (프로젝트 개요)
 - 프로젝트 이름: Table For You
 - 프로젝트 설명: 식당 테이블 예약 서비스
+- 프로젝트 목적: 백엔드와의 협업, 리액트 학습 후 실습을 위함.
 
 <br/>
 <br/>
