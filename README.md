@@ -6,9 +6,11 @@
 <br/>
 
 # 0. 배포 사이트 
-[서비스 링크](https://table-for-you.com/){:target="_blank"}
+[서비스 링크](https://table-for-you.com/)
 <br/><br/>
-[REST API - 스웨거](https://api.table-for-you.com/swagger-ui/index.html){:target="_blank"}
+[REST API - 스웨거](https://api.table-for-you.com/swagger-ui/index.html)
+<br/><br/>
+(새 창에서 여는 방법은 ctrl + 마우스 좌클릭 입니다.)
 
 
 <br/>
