@@ -6,9 +6,10 @@
 <br/>
 
 # 0. 배포 사이트 
-<a href="https://table-for-you.com/" target="_blank">서비스 링크</a>
+[서비스 링크](https://table-for-you.com/){:target="_blank"}
 <br/><br/>
-<a href="https://api.table-for-you.com/swagger-ui/index.html" target="_blank">REST API - 스웨거</a>
+[REST API - 스웨거](https://api.table-for-you.com/swagger-ui/index.html){:target="_blank"}
+
 
 <br/>
 <br/>
